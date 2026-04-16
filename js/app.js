@@ -20,6 +20,7 @@ let assessmentData = {
 
 // ── Initialization ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+    initTheme();
     setupNavigation();
     setupWeightSliders();
     loadQuestions();
@@ -162,6 +163,39 @@ async function handleLogout() {
     currentUser = null;
     showAuth();
     showToast('Signed out', 'info');
+}
+
+// ── Theme Toggle ───────────────────────────────────────────────
+function initTheme() {
+    const saved = localStorage.getItem('rab-theme');
+    if (saved === 'light' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+        document.documentElement.classList.add('light-theme');
+        updateThemeIcons('light');
+    }
+}
+
+function toggleTheme() {
+    const isLight = document.documentElement.classList.toggle('light-theme');
+    localStorage.setItem('rab-theme', isLight ? 'light' : 'dark');
+    updateThemeIcons(isLight ? 'light' : 'dark');
+    
+    // Update charts if they exist
+    if (typeof loadAllResults === 'function' && document.getElementById('view-results').classList.contains('active')) {
+        loadAllResults();
+    }
+    // Note: specific charts on active views might need manual re-rendering
+}
+
+function updateThemeIcons(theme) {
+    const moons = document.querySelectorAll('.theme-icon-moon');
+    const suns = document.querySelectorAll('.theme-icon-sun');
+    if (theme === 'light') {
+        moons.forEach(m => m.style.display = 'none');
+        suns.forEach(s => s.style.display = 'block');
+    } else {
+        moons.forEach(m => m.style.display = 'block');
+        suns.forEach(s => s.style.display = 'none');
+    }
 }
 
 // ── Navigation ─────────────────────────────────────────────────

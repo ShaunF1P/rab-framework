@@ -57,7 +57,11 @@ function getQuestions() {
         education: 'going back to school',
         relocation: 'relocating',
         adventure: 'taking a sabbatical/adventure',
-        retirement: 'retiring'
+        retirement: 'retiring',
+        family: 'growing the family',
+        vacation: 'the big trip',
+        house: 'buying a house',
+        marriage: 'getting married'
     }[decision] || 'this change';
 
     if (selectedFramework === 'swot') return getSWOTQuestions(decisionLabel);
@@ -411,16 +415,19 @@ function calculateSWOT(questions) {
 
     const overall = Math.round((scores.strengths + scores.weaknesses + scores.opportunities + scores.threats) / 4);
     const verdict = overall >= 73 ? 'Ready to Leap' : overall >= 47 ? 'Proceed with Caution' : 'Not Yet — Strengthen First';
+    
+    // Whimsical tone branching
+    const isWhimsical = ['family', 'vacation', 'marriage'].includes(selectedDecision);
 
     return {
         type: 'swot',
         overallScore: overall,
         verdict,
         recommendation: overall >= 73
-            ? 'Your SWOT analysis shows strong readiness. Your strengths and opportunities outweigh the risks.'
+            ? (isWhimsical ? 'Your heart and your foundation are perfectly aligned for this! Your strengths and opportunities completely outshine the risks.' : 'Your SWOT analysis shows strong readiness. Your strengths and opportunities outweigh the risks.')
             : overall >= 47
-            ? 'You have a foundation but should address weaknesses before committing. Develop a mitigation plan.'
-            : 'Significant gaps exist. Focus on building skills, savings, and support systems before making this move.',
+            ? (isWhimsical ? 'You have a great foundation, but slow down for a second. Make sure you address the little worries before fully committing to the magic.' : 'You have a foundation but should address weaknesses before committing. Develop a mitigation plan.')
+            : (isWhimsical ? 'There are a few too many stressful gaps right now. Focus on building peace of mind, savings, and your support circle first so you can truly enjoy this.' : 'Significant gaps exist. Focus on building skills, savings, and support systems before making this move.'),
         scores,
         details: cats
     };
@@ -438,15 +445,21 @@ function calculateRiskReward(questions) {
     const rewardAvg = Math.round(rewardTotal / rewardCount * 10);
     const overall = Math.round((rewardAvg - riskAvg + 100) / 2);
 
+    const isWhimsical = ['family', 'vacation', 'marriage'].includes(selectedDecision);
+
     let verdict, recommendation;
     if (rewardAvg >= 70 && riskAvg <= 40) {
-        verdict = 'Go For It'; recommendation = 'High reward with manageable risk — this is a strong opportunity.';
+        verdict = 'Go For It'; 
+        recommendation = isWhimsical ? 'The memories and joy this will bring heavily outweigh any stress. This is a beautiful opportunity.' : 'High reward with manageable risk — this is a strong opportunity.';
     } else if (rewardAvg >= 50 && riskAvg <= 60) {
-        verdict = 'Proceed with Plan'; recommendation = 'Reward justifies the risk, but develop a solid contingency plan.';
+        verdict = 'Proceed with Plan'; 
+        recommendation = isWhimsical ? 'The reward is totally worth it, but make sure you have a solid backup plan to keep the stress low!' : 'Reward justifies the risk, but develop a solid contingency plan.';
     } else if (rewardAvg <= 40 && riskAvg >= 60) {
-        verdict = 'Reconsider'; recommendation = 'Risk outweighs reward significantly. Re-evaluate or find ways to reduce risk.';
+        verdict = 'Reconsider'; 
+        recommendation = isWhimsical ? 'The stress and risk might overshadow the core memories right now. It is okay to wait for better timing.' : 'Risk outweighs reward significantly. Re-evaluate or find ways to reduce risk.';
     } else {
-        verdict = 'Carefully Consider'; recommendation = 'Mixed signals. Deep dive into the specific risk factors before deciding.';
+        verdict = 'Carefully Consider'; 
+        recommendation = isWhimsical ? 'Mixed feelings are normal. Deep dive into the specific worries you have before springing for this.' : 'Mixed signals. Deep dive into the specific risk factors before deciding.';
     }
 
     return {
@@ -473,15 +486,21 @@ function calculateDecisionMatrix(questions) {
     const newPct = Math.round(newWeighted / (totalWeight * 8) * 100);
     const overall = Math.round((newPct + (100 - currentPct)) / 2);
 
+    const isWhimsical = ['family', 'vacation', 'marriage'].includes(selectedDecision);
+
     let verdict, recommendation;
     if (newPct > currentPct + 15) {
-        verdict = 'New Path Wins'; recommendation = 'The new path scores significantly higher across your weighted priorities. This leap is well-aligned.';
+        verdict = 'New Path Wins'; 
+        recommendation = isWhimsical ? 'This beautiful transition aligns perfectly with your deepest priorities. Take the leap!' : 'The new path scores significantly higher across your weighted priorities. This leap is well-aligned.';
     } else if (newPct > currentPct) {
-        verdict = 'Slight Edge — New Path'; recommendation = 'The new path edges ahead, but the margin is thin. Consider what would tip the scales further.';
+        verdict = 'Slight Edge — New Path'; 
+        recommendation = isWhimsical ? 'It feels like the right move, but the margin is thin. Trust your gut on what tip the scales.' : 'The new path edges ahead, but the margin is thin. Consider what would tip the scales further.';
     } else if (currentPct > newPct + 10) {
-        verdict = 'Stay the Course'; recommendation = 'Your current path scores higher. The leap may not be worth it at this time.';
+        verdict = 'Stay the Course'; 
+        recommendation = isWhimsical ? 'Honestly, your current stability is scoring higher. You don\'t need to rush this right now.' : 'Your current path scores higher. The leap may not be worth it at this time.';
     } else {
-        verdict = 'Too Close to Call'; recommendation = 'Both paths score similarly. Additional factors (timing, gut feeling, mentorship) should guide your decision.';
+        verdict = 'Too Close to Call'; 
+        recommendation = isWhimsical ? 'It\'s a tie between your head and your heart. Take a walk, talk to someone you trust, and see how you feel tomorrow.' : 'Both paths score similarly. Additional factors (timing, gut feeling, mentorship) should guide your decision.';
     }
 
     return {
@@ -732,3 +751,37 @@ function resetAssessment() {
     document.getElementById('btn-to-questions').disabled = true;
     switchView('step-framework');
 }
+
+// ── Theme & Init ─────────────────────────────────────────────────
+function initTheme() {
+    const saved = localStorage.getItem('rab-theme');
+    if (saved === 'light' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+        document.documentElement.classList.add('light-theme');
+        updateThemeIcons('light');
+    }
+}
+
+function toggleTheme() {
+    const isLight = document.documentElement.classList.toggle('light-theme');
+    localStorage.setItem('rab-theme', isLight ? 'light' : 'dark');
+    updateThemeIcons(isLight ? 'light' : 'dark');
+    
+    // Rerender charts if results view is active (wait a short bit for CSS vars to apply)
+    if (document.getElementById('step-results').classList.contains('active') && selectedFramework) {
+        setTimeout(calculateResults, 100);
+    }
+}
+
+function updateThemeIcons(theme) {
+    const moons = document.querySelectorAll('.theme-icon-moon');
+    const suns = document.querySelectorAll('.theme-icon-sun');
+    if (theme === 'light') {
+        moons.forEach(m => m.style.display = 'none');
+        suns.forEach(s => s.style.display = 'block');
+    } else {
+        moons.forEach(m => m.style.display = 'block');
+        suns.forEach(s => s.style.display = 'none');
+    }
+}
+
+window.addEventListener('DOMContentLoaded', initTheme);

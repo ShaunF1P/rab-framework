@@ -49,6 +49,24 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        :root.light-theme {
+            --bg-deep: #f8fafc;
+            --bg-surface: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-elevated: #ffffff;
+            --border: rgba(15, 23, 42, 0.1);
+            --border-glow: rgba(20, 184, 166, 0.25);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-dim: #64748b;
+            --teal: #0d9488;
+            --teal-glow: #14b8a6;
+            --teal-dim: rgba(20, 184, 166, 0.1);
+            --coral: #ea580c;
+            --coral-glow: #f97316;
+            --coral-dim: rgba(249, 115, 22, 0.1);
+        }
+
         body {
             font-family: var(--font-body);
             background: var(--bg-deep);
@@ -129,6 +147,28 @@
             transition: var(--transition);
         }
         body.reduce-motion .motion-dot { background: var(--text-dim); }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 8.5rem;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(10, 17, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-dim);
+            transition: var(--transition);
+        }
+        :root.light-theme .theme-toggle { background: rgba(255, 255, 255, 0.85); color: var(--text-secondary); }
+        .theme-toggle:hover { border-color: var(--teal); color: var(--teal); }
 
         /* ── Particle Field ─────────────────────── */
         .particle-field {
@@ -779,7 +819,11 @@
     </div>
     <div class="particle-field" id="particle-field"></div>
 
-    <!-- Motion Toggle -->
+    <!-- Toggles -->
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle" aria-label="Toggle Theme">
+        <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    </button>
     <button class="motion-toggle" onclick="toggleMotion()" id="motion-toggle">
         <span class="motion-dot"></span>
         <span id="motion-label">Motion On</span>
@@ -843,6 +887,28 @@
                         <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
                         <h3>Retirement</h3>
                         <p>Transitioning out of the workforce</p>
+                    </div>
+
+                    <!-- ── New Consumer Categories ── -->
+                    <div class="decision-card" data-decision="family" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                        <h3>Growing the Family</h3>
+                        <p>Having a baby or adopting</p>
+                    </div>
+                    <div class="decision-card" data-decision="vacation" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
+                        <h3>The Big Trip</h3>
+                        <p>Disney, Europe, or major vacation</p>
+                    </div>
+                    <div class="decision-card" data-decision="house" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                        <h3>Buying a House</h3>
+                        <p>First home or major real estate</p>
+                    </div>
+                    <div class="decision-card" data-decision="marriage" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
+                        <h3>Getting Married</h3>
+                        <p>Tying the knot and merging lives</p>
                     </div>
                 </div>
                 <div style="text-align:center;margin-top:2rem;">
