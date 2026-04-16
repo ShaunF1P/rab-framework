@@ -185,7 +185,7 @@ function simulateSync() {
             document.getElementById('val-curr-perks').value = 6500;
             
             ['bonus', 'health', 'perks'].forEach(id => {
-                updateDisp(\`val-curr-\${id}\`, \`val-\${id}-disp\`);
+                updateDisp(`val-curr-${id}`, `val-${id}-disp`);
             });
             
             calculateAnchor();
@@ -233,11 +233,11 @@ function calculateAnchor() {
     if (netValue > 0) {
         netValEl.className = 'net-value positive';
         verdictEl.textContent = 'Net Gain in True Value';
-        msgEl.innerHTML = \`While this transition represents a net gain, ensure the cultural fit aligns with your risk tolerance. Your current anchor value is strong, but the new offer overcomes the transition friction.\`;
+        msgEl.innerHTML = `While this transition represents a net gain, ensure the cultural fit aligns with your risk tolerance. Your current anchor value is strong, but the new offer overcomes the transition friction.`;
     } else {
         netValEl.className = 'net-value negative';
         verdictEl.textContent = 'Net Loss in True Value';
-        msgEl.innerHTML = \`Let's evaluate your true holding power. A raw salary bump of <strong>$\${rawDiff.toLocaleString()}</strong> can be a <em>Salary Mirage</em> when factoring in lost social capital, unvested benefits, and transition risk. To break even on this move without taking a hidden loss, your new offer needs to be at least <strong>$\${breakEven.toLocaleString()}</strong>.\`;
+        msgEl.innerHTML = `Let's evaluate your true holding power. A raw salary bump of <strong>$${rawDiff.toLocaleString()}</strong> can be a <em>Salary Mirage</em> when factoring in lost social capital, unvested benefits, and transition risk. To break even on this move without taking a hidden loss, your new offer needs to be at least <strong>$${breakEven.toLocaleString()}</strong>.`;
     }
 
     renderAnchorCharts(trueCurrentValue, trueNewValue, {
