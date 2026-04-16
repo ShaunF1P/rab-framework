@@ -8,4 +8,4 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Cloud server URL (for webhooks, PDF generation)
-const CLOUD_SERVER_URL = '';
+const CLOUD_SERVER_URL = 'https://rab-relay-454433309736.us-east1.run.app';
