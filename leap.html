@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -800,6 +801,95 @@
         .view.active { display: block; animation: slideUp 0.4s ease; }
         .hidden { display: none !important; }
 
+        /* ── Victory Lap & Brag Sheet ───────────────────── */
+        .victory-lap-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            animation: slideUp 0.4s ease;
+            text-align: center;
+        }
+        .victory-select-group { margin-bottom: 1.5rem; text-align: left; }
+        .victory-select-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .victory-select-group select {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.875rem;
+            appearance: none;
+            cursor: pointer;
+        }
+        .victory-select-group select:focus { outline: none; border-color: var(--teal); }
+        .brag-receipt {
+            background: linear-gradient(135deg, var(--bg-deep), var(--bg-card));
+            border: 2px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem auto;
+            max-width: 450px;
+            box-shadow: 0 10px 40px rgba(20, 184, 166, 0.1);
+        }
+        .brag-receipt::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at center, rgba(20, 184, 166, 0.05) 0%, transparent 60%);
+        }
+        .brag-receipt h3 {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            color: var(--teal);
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.02em;
+            position: relative; z-index: 1;
+        }
+        .brag-equation {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            position: relative; z-index: 1;
+        }
+        .brag-item {
+            background: var(--bg-surface);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            font-size: 0.9375rem;
+        }
+        .brag-plus { font-size: 1.25rem; color: var(--text-dim); font-weight: 800; }
+        .brag-equals { font-size: 1.5rem; color: var(--coral); font-weight: 800; margin: 0.25rem 0; }
+        .brag-result {
+            background: linear-gradient(135deg, var(--teal), var(--coral));
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            color: white;
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+        .brag-footer {
+            margin-top: 1.25rem;
+            font-size: 0.6875rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative; z-index: 1;
+        }
+
         /* ── Responsive ─────────────────────────── */
         @media (max-width: 640px) {
             .decision-grid, .framework-grid { grid-template-columns: 1fr; }
@@ -946,6 +1036,41 @@
             <!-- ═══ Step 3: Questions ═══ -->
             <div id="step-questions" class="view">
                 <div class="question-container" id="question-container"></div>
+            </div>
+
+            <!-- ═══ Step 3.5: Victory Lap ═══ -->
+            <div id="step-victory-lap" class="view">
+                <div class="victory-lap-container" id="victory-lap-container">
+                    <h2 class="step-title">Take a Victory Lap 🏆</h2>
+                    <p class="step-desc" style="max-width:500px;margin:0 auto 2rem;">Before we generate your final score, let's look at the hard work you've put in. Choose your biggest recent wins so we can see if you've truly earned this leap.</p>
+                    
+                    <div class="victory-select-group">
+                        <label>Professional / Hustle Win</label>
+                        <select id="vl-win-1">
+                            <option value="Consistently hit my targets">Consistently hit my targets</option>
+                            <option value="Saved up all my PTO">Saved up all my PTO</option>
+                            <option value="Leveled up my skills">Leveled up my skills</option>
+                            <option value="Showed up every single day">Showed up every single day</option>
+                            <option value="Secured the bag">Secured the bag</option>
+                        </select>
+                    </div>
+
+                    <div class="victory-select-group">
+                        <label>Personal / Family Win</label>
+                        <select id="vl-win-2">
+                            <option value="Kept the household running perfectly">Kept the household running perfectly</option>
+                            <option value="Kids absolutely crushed it">Kids absolutely crushed it</option>
+                            <option value="Supported my loved ones">Supported my loved ones through thick and thin</option>
+                            <option value="Actually prioritized my peace">Actually prioritized my peace for once</option>
+                            <option value="Made time for joy">Made time for joy</option>
+                        </select>
+                    </div>
+
+                    <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:2rem;">
+                        <button class="btn btn-secondary" onclick="skipVictoryLap()">No Thanks, Just the Score</button>
+                        <button class="btn btn-primary" onclick="submitVictoryLap()">Generate My Receipt</button>
+                    </div>
+                </div>
             </div>
 
             <!-- ═══ Step 4: Results ═══ -->

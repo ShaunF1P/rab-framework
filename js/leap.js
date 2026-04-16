@@ -16,6 +16,7 @@ let selectedFramework = null;
 let currentQuestion = 0;
 let answers = [];
 let assessmentId = null;
+let victoryLapData = null;
 
 // ── Decision Selection ───────────────────────────────────────────
 function selectDecision(el) {
@@ -44,6 +45,7 @@ function goToDecision() { switchView('step-decision'); }
 function goToQuestions() {
     currentQuestion = 0;
     answers = [];
+    victoryLapData = null;
     renderQuestion();
     switchView('step-questions');
 }
@@ -338,8 +340,29 @@ function nextQuestion() {
             document.getElementById('btn-next-q').disabled = false;
         }
     } else {
-        calculateResults();
+        const isWhimsical = ['family', 'vacation', 'marriage', 'house'].includes(selectedDecision);
+        if (isWhimsical) {
+            promptVictoryLap();
+        } else {
+            calculateResults();
+        }
     }
+}
+
+function promptVictoryLap() {
+    switchView('step-victory-lap');
+}
+
+function skipVictoryLap() {
+    victoryLapData = null;
+    calculateResults();
+}
+
+function submitVictoryLap() {
+    const win1 = document.getElementById('vl-win-1').value;
+    const win2 = document.getElementById('vl-win-2').value;
+    victoryLapData = { win1, win2 };
+    calculateResults();
 }
 
 function prevQuestion() {
@@ -531,6 +554,33 @@ function renderResults(results) {
     if (results.type === 'swot') html += renderSWOTResults(results);
     if (results.type === 'risk_reward') html += renderRiskRewardResults(results);
     if (results.type === 'decision_matrix') html += renderDecisionMatrixResults(results);
+
+    // Brag Receipt
+    if (victoryLapData) {
+        const decisionLabel = {
+            family: 'Growing the Family',
+            vacation: 'The Big Trip',
+            house: 'A New Home',
+            marriage: 'Getting Married'
+        }[selectedDecision] || 'This Leap';
+
+        html += `
+            <div class="brag-receipt" id="brag-receipt">
+                <h3>Achievement Unlocked</h3>
+                <div class="brag-equation">
+                    <div class="brag-item">${victoryLapData.win1}</div>
+                    <div class="brag-plus">+</div>
+                    <div class="brag-item">${victoryLapData.win2}</div>
+                    <div class="brag-equals">=</div>
+                    <div class="brag-result">${decisionLabel}</div>
+                </div>
+                <div class="brag-footer">Validated by RAB Framework | Leap Score</div>
+            </div>
+            <div style="text-align:center;margin-bottom:2rem;">
+                <button class="btn btn-primary" onclick="downloadBragReceipt()" style="background:var(--teal);color:#fff;">Download Infographic</button>
+            </div>
+        `;
+    }
 
     // Email capture
     html += `
@@ -747,9 +797,32 @@ function resetAssessment() {
     currentQuestion = 0;
     answers = [];
     assessmentId = null;
+    victoryLapData = null;
     document.querySelectorAll('.framework-card').forEach(c => c.classList.remove('selected'));
     document.getElementById('btn-to-questions').disabled = true;
     switchView('step-framework');
+}
+
+async function downloadBragReceipt() {
+    const el = document.getElementById('brag-receipt');
+    if (!el || typeof html2canvas === 'undefined') return;
+    
+    // Briefly force element into view perfectly
+    el.style.backgroundColor = document.documentElement.classList.contains('light-theme') ? '#ffffff' : '#050a14';
+    
+    try {
+        const canvas = await html2canvas(el, { 
+            scale: 2, 
+            backgroundColor: null,
+            useCORS: true
+        });
+        const link = document.createElement('a');
+        link.download = 'leap-score-brag.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch (e) {
+        console.error('Canvas error:', e);
+    }
 }
 
 // ── Theme & Init ─────────────────────────────────────────────────
