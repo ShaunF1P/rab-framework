@@ -757,7 +757,14 @@ async function captureEmail() {
     const email = document.getElementById('leap-email').value.trim();
     if (!email || !email.includes('@')) return;
 
+    // Get the current score from the results view
+    const scoreEl = document.querySelector('.result-score');
+    const verdictEl = document.querySelector('.result-verdict');
+    const currentScore = scoreEl ? parseInt(scoreEl.textContent) : 0;
+    const currentVerdict = verdictEl ? verdictEl.textContent : '';
+
     try {
+        // 1. Save to Supabase
         await sb.from('leap_leads').insert({
             email,
             decision_type: selectedDecision,
@@ -765,6 +772,22 @@ async function captureEmail() {
             assessment_id: assessmentId,
             source: 'direct'
         });
+
+        // 2. Route to Relay Server → GHL + Telegram
+        fetch(`${RELAY_URL}/api/webhooks/leap-lead`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email,
+                assessment_id: assessmentId,
+                type: selectedFramework,
+                score: currentScore,
+                verdict: currentVerdict,
+                decision: selectedDecision,
+                timestamp: new Date().toISOString()
+            })
+        }).catch(err => console.warn('[Relay] GHL routing error:', err.message));
+
         document.getElementById('email-capture').innerHTML = `
             <h3>Report Sent</h3>
             <p style="color:var(--teal);">Check your inbox for your personalized risk analysis report.</p>
