@@ -539,10 +539,10 @@ async function loadAllResults() {
         if (!assessments || assessments.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon">📊</div>
+                    <div class="empty-state-icon">—</div>
                     <h3>No Assessments Yet</h3>
                     <p>Start your first risk appetite assessment to see results here.</p>
-                    <button class="btn-primary" onclick="startAssessment()">✦ Start Assessment</button>
+                    <button class="btn-primary" onclick="startAssessment()">Start Assessment</button>
                 </div>`;
             return;
         }

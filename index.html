@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAB Framework — Risk Appetite Balancing for Executive Decision-Making</title>
+    <title>RAB Framework — Enterprise Risk Appetite Governance</title>
     <meta name="description" content="Quantify organizational risk appetite across 5 dimensions. Board member assessment, strategic decision evaluation, and actionable governance insights powered by COSO ERM and ISO 31000.">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -14,7 +16,10 @@
 <body>
     <!-- Loading Overlay -->
     <div id="loading-overlay">
-        <div class="loader"></div>
+        <div class="loader-container">
+            <div class="loader"></div>
+            <p class="loader-text">Initializing RAB Framework</p>
+        </div>
     </div>
 
     <!-- Toast Container -->
@@ -24,8 +29,15 @@
     <div id="view-auth" class="view">
         <div class="auth-container">
             <div class="auth-logo">
+                <div class="logo-mark">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                        <rect width="40" height="40" rx="8" fill="url(#logo-grad)"/>
+                        <path d="M12 28V12h6.5c3.5 0 5.5 2 5.5 5 0 2.2-1.2 3.8-3.2 4.4L25 28h-3.5l-3.8-6H15.5v6H12zm3.5-9h3c1.8 0 2.5-1 2.5-2.2 0-1.3-.8-2.3-2.5-2.3h-3v4.5z" fill="white"/>
+                        <defs><linearGradient id="logo-grad" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#1a3a5c"/><stop offset="1" stop-color="#0d1b2a"/></linearGradient></defs>
+                    </svg>
+                </div>
                 <h1>RAB Framework</h1>
-                <p>Risk Appetite Balancing for Executive Decision-Making</p>
+                <p>Enterprise Risk Appetite Governance</p>
             </div>
             <div class="auth-card">
                 <h2>Welcome</h2>
@@ -44,7 +56,7 @@
                     </div>
                     <div class="form-group">
                         <label for="login-password">Password</label>
-                        <input type="password" id="login-password" placeholder="••••••••" required>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
                     </div>
                     <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Sign In</button>
                     <p class="auth-error" id="login-error"></p>
@@ -72,8 +84,15 @@
                     <p class="auth-error" id="signup-error"></p>
                 </form>
 
+                <div class="auth-trust">
+                    <div class="trust-badges">
+                        <span class="trust-badge">COSO ERM</span>
+                        <span class="trust-badge">ISO 31000</span>
+                        <span class="trust-badge">SOC 2 Ready</span>
+                    </div>
+                </div>
                 <p class="auth-footer">
-                    Grounded in COSO ERM & ISO 31000 · Developed at Johns Hopkins Carey Business School
+                    Developed at Johns Hopkins Carey Business School
                 </p>
             </div>
         </div>
@@ -85,8 +104,17 @@
         <nav class="navbar">
             <div class="navbar-inner">
                 <div class="nav-brand">
-                    <h1>RAB Framework</h1>
-                    <span class="tagline">Risk Appetite Balancing</span>
+                    <div class="nav-logo-mark">
+                        <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="url(#nav-logo-grad)"/>
+                            <path d="M12 28V12h6.5c3.5 0 5.5 2 5.5 5 0 2.2-1.2 3.8-3.2 4.4L25 28h-3.5l-3.8-6H15.5v6H12zm3.5-9h3c1.8 0 2.5-1 2.5-2.2 0-1.3-.8-2.3-2.5-2.3h-3v4.5z" fill="white"/>
+                            <defs><linearGradient id="nav-logo-grad" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#1a3a5c"/><stop offset="1" stop-color="#0d1b2a"/></linearGradient></defs>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1>RAB Framework</h1>
+                        <span class="tagline">Enterprise Risk Governance</span>
+                    </div>
                 </div>
                 <div class="nav-links">
                     <button class="nav-btn active" data-view="home" id="nav-home">Dashboard</button>
@@ -108,30 +136,37 @@
             <section id="view-home" class="view active">
                 <div class="hero">
                     <div class="hero-badge">
-                        <span>⚡</span>
-                        <span>Enterprise Risk Governance</span>
+                        <span>Enterprise Risk Governance Platform</span>
                     </div>
                     <h2>Strategic Risk Governance <br><span class="gradient-text">Made Actionable</span></h2>
                     <p class="subtitle">Quantify your organization's risk appetite across five critical dimensions. Assess board members, evaluate strategic decisions, and receive actionable governance insights.</p>
 
                     <div class="feature-grid">
                         <div class="feature-card">
-                            <div class="feature-icon strategic">📊</div>
+                            <div class="feature-icon strategic">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                            </div>
                             <h3>Multi-Dimensional Assessment</h3>
                             <p>Evaluate risk appetite across Strategic, Operational, Financial, Compliance, and Resilience dimensions with 20 scenario-based questions.</p>
                         </div>
                         <div class="feature-card">
-                            <div class="feature-icon operational">👥</div>
+                            <div class="feature-icon operational">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
                             <h3>Board Member Evaluation</h3>
                             <p>Assess risk profiles of current or prospective board members to ensure optimal governance composition and diversity.</p>
                         </div>
                         <div class="feature-card">
-                            <div class="feature-icon financial">⚖️</div>
+                            <div class="feature-icon financial">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            </div>
                             <h3>Decision Framework</h3>
                             <p>Evaluate strategic decisions against organizational risk tolerance and capacity thresholds with quantified outputs.</p>
                         </div>
                         <div class="feature-card">
-                            <div class="feature-icon insights">💡</div>
+                            <div class="feature-icon insights">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            </div>
                             <h3>Actionable Insights</h3>
                             <p>Receive prioritized recommendations grounded in COSO ERM, ISO 31000, and real-world case studies.</p>
                         </div>
@@ -139,10 +174,10 @@
 
                     <div class="cta-section">
                         <button class="btn-primary" onclick="startAssessment()">
-                            <span>✦</span> Start New Assessment
+                            Start New Assessment
                         </button>
                         <button class="btn-secondary" onclick="viewResults()">
-                            View Past Results →
+                            View Past Results
                         </button>
                     </div>
 
@@ -155,6 +190,17 @@
                             <li><strong>Queueing Theory:</strong> Managing capacity-service level tradeoffs under uncertainty</li>
                             <li><strong>Newsvendor Model:</strong> Balancing overage and underage costs in risk decisions</li>
                         </ul>
+                    </div>
+
+                    <!-- Trusted By -->
+                    <div class="trusted-section">
+                        <p class="trusted-label">Built on industry-standard frameworks</p>
+                        <div class="trusted-logos">
+                            <span>COSO</span>
+                            <span>ISO 31000</span>
+                            <span>NACD</span>
+                            <span>IRM</span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -178,14 +224,14 @@
                             <label class="radio-card">
                                 <input type="radio" name="assessment_type" value="board_member">
                                 <div class="radio-content">
-                                    <h4>👤 Board Member Assessment</h4>
+                                    <h4>Board Member Assessment</h4>
                                     <p>Evaluate the risk profile of a current or prospective board member</p>
                                 </div>
                             </label>
                             <label class="radio-card">
                                 <input type="radio" name="assessment_type" value="decision">
                                 <div class="radio-content">
-                                    <h4>⚖️ Strategic Decision</h4>
+                                    <h4>Strategic Decision</h4>
                                     <p>Assess a specific strategic decision or initiative against organizational risk appetite</p>
                                 </div>
                             </label>
@@ -256,30 +302,30 @@
 
                     <!-- Step 5: Operational & Financial -->
                     <div class="assessment-step" id="step-5">
-                        <h3>Operational & Financial Risk Questions</h3>
+                        <h3>Operational &amp; Financial Risk Questions</h3>
                         <p>Evaluate preferences for capacity, operations, and financial strategy.</p>
                         <div id="operational-financial-questions"></div>
                     </div>
 
                     <!-- Step 6: Compliance -->
                     <div class="assessment-step" id="step-6">
-                        <h3>Compliance & Reputational Risk Questions</h3>
+                        <h3>Compliance &amp; Reputational Risk Questions</h3>
                         <p>How does the organization navigate regulatory and ethical boundaries?</p>
                         <div id="compliance-questions"></div>
                     </div>
 
                     <!-- Step 7: Resilience -->
                     <div class="assessment-step" id="step-7">
-                        <h3>Resilience & Capacity Questions</h3>
+                        <h3>Resilience &amp; Capacity Questions</h3>
                         <p>How prepared is the organization for disruption and uncertainty?</p>
                         <div id="resilience-questions"></div>
                     </div>
 
                     <!-- Navigation Buttons -->
                     <div class="assessment-nav">
-                        <button class="btn-secondary" id="btn-prev" onclick="prevStep()" disabled>← Previous</button>
-                        <button class="btn-primary" id="btn-next" onclick="nextStep()">Next →</button>
-                        <button class="btn-primary" id="btn-submit" onclick="submitAssessment()" style="display: none;">✦ Complete Assessment</button>
+                        <button class="btn-secondary" id="btn-prev" onclick="prevStep()" disabled>Previous</button>
+                        <button class="btn-primary" id="btn-next" onclick="nextStep()">Next</button>
+                        <button class="btn-primary" id="btn-submit" onclick="submitAssessment()" style="display: none;">Complete Assessment</button>
                     </div>
                 </div>
             </section>
@@ -288,7 +334,7 @@
             <section id="view-results" class="view">
                 <div class="results-header">
                     <h2>Assessment Results</h2>
-                    <button class="btn-secondary" onclick="loadAllResults()">⟳ Refresh</button>
+                    <button class="btn-secondary" onclick="loadAllResults()">Refresh</button>
                 </div>
                 <div id="results-list" class="results-grid"></div>
             </section>
@@ -299,7 +345,7 @@
                 <div class="compare-container">
                     <div class="compare-select">
                         <div class="form-group">
-                            <label>Select Assessments to Compare (2–4)</label>
+                            <label>Select Assessments to Compare (2-4)</label>
                             <div id="compare-checkboxes"></div>
                         </div>
                         <button class="btn-primary" onclick="generateComparison()">Generate Comparison</button>
@@ -331,9 +377,9 @@
                         <p>The framework uses <strong>20 scenario-based questions</strong> distributed across five dimensions (4 questions per dimension). Each question presents a realistic scenario with a 5-point Likert scale from conservative to aggressive.</p>
                         <h4>Scoring:</h4>
                         <ul>
-                            <li><strong>Dimension Score</strong> = ((Average Response – 1) / 4) × 100</li>
-                            <li><strong>Overall RAB Score</strong> = Σ (Dimension Score × Dimension Weight)</li>
-                            <li><strong>Conservative</strong> (0–39) · <strong>Moderate</strong> (40–69) · <strong>Aggressive</strong> (70–100)</li>
+                            <li><strong>Dimension Score</strong> = ((Average Response - 1) / 4) x 100</li>
+                            <li><strong>Overall RAB Score</strong> = Sum (Dimension Score x Dimension Weight)</li>
+                            <li><strong>Conservative</strong> (0-39) | <strong>Moderate</strong> (40-69) | <strong>Aggressive</strong> (70-100)</li>
                         </ul>
                     </div>
 
@@ -341,9 +387,9 @@
                         <h3>Course Connection</h3>
                         <p><strong>Original Concept:</strong> The RAB Framework was conceived by <strong>Bukola Olajire</strong> during the Operations Management course at Johns Hopkins Carey Business School (Spring 2026), taught by <strong>Graeme Warren</strong>.</p>
                         <ul>
-                            <li><strong>Littlefield Simulation:</strong> Capacity-inventory-contract tradeoffs under cash constraints → Financial Risk</li>
-                            <li><strong>Neighbors Coffee Shop:</strong> Artisanal quality vs. operational efficiency → Strategic Risk</li>
-                            <li><strong>Hip Op Hospital:</strong> Throughput vs. burnout/quality balancing → Operational Resilience</li>
+                            <li><strong>Littlefield Simulation:</strong> Capacity-inventory-contract tradeoffs under cash constraints — Financial Risk</li>
+                            <li><strong>Neighbors Coffee Shop:</strong> Artisanal quality vs. operational efficiency — Strategic Risk</li>
+                            <li><strong>Hip Op Hospital:</strong> Throughput vs. burnout/quality balancing — Operational Resilience</li>
                         </ul>
                     </div>
 
@@ -357,7 +403,7 @@
                             <li>Institute of Risk Management. (2019). <em>Review of the COSO ERM Frameworks</em>.</li>
                         </ul>
                         <p style="margin-top:1.5rem;font-size:0.875rem;color:var(--text-dim);">
-                            Original concept by <strong>Bukola Olajire</strong> · Technical implementation by <strong>F1rst Position</strong> · 
+                            Original concept by <strong>Bukola Olajire</strong>  |  Technical implementation by <strong>F1rst Position</strong>  |  
                             Powered by Supabase
                         </p>
                     </div>
@@ -367,7 +413,7 @@
             <!-- ── Detail View ────────────────────────── -->
             <section id="view-detail" class="view" style="display: none;">
                 <div class="detail-container">
-                    <button class="btn-secondary back-btn" onclick="backToResults()">← Back to Results</button>
+                    <button class="btn-secondary back-btn" onclick="backToResults()">Back to Results</button>
                     <div id="detail-content"></div>
                 </div>
             </section>
@@ -375,11 +421,13 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>
-                &copy; 2026 RAB Framework — Risk Appetite Balancing<br>
-                Original Concept by Bukola Olajire · Johns Hopkins Carey Business School<br>
-                Built by F1rst Position
-            </p>
+            <div class="footer-inner">
+                <p>
+                    &copy; 2026 RAB Framework  |  Enterprise Risk Appetite Governance<br>
+                    Original Concept by Bukola Olajire  |  Johns Hopkins Carey Business School<br>
+                    Built by F1rst Position
+                </p>
+            </div>
         </footer>
     </div>
 
