@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Leap — Should You Take the Leap?</title>
+    <meta name="description" content="Free risk assessment tool to analyze your next big life decision — career change, entrepreneurship, education, relocation, or adventure. Powered by SWOT, Risk-Reward, and Decision Matrix frameworks.">
+    <meta property="og:title" content="Life Leap — Should You Take the Leap?">
+    <meta property="og:description" content="Analyze your next big life decision with professional risk frameworks. Free.">
+    <meta property="og:type" content="website">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --bg-deep: #0a0f1a;
+            --bg-surface: #111827;
+            --bg-card: #1a2332;
+            --bg-elevated: #1e293b;
+            --border: rgba(148, 163, 184, 0.08);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-dim: #64748b;
+            --teal: #14b8a6;
+            --teal-glow: #2dd4bf;
+            --teal-dim: rgba(20, 184, 166, 0.1);
+            --coral: #f97316;
+            --coral-dim: rgba(249, 115, 22, 0.1);
+            --blue: #3b82f6;
+            --green: #22c55e;
+            --red: #ef4444;
+            --amber: #f59e0b;
+            --purple: #8b5cf6;
+            --gold: #c9a84c;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── Hero ───────────────────────────────── */
+        .hero {
+            text-align: center;
+            padding: 4rem 1.5rem 2.5rem;
+            background: linear-gradient(180deg, rgba(20, 184, 166, 0.04) 0%, transparent 100%);
+        }
+        .hero-badge {
+            display: inline-block;
+            padding: 0.25rem 0.875rem;
+            background: var(--teal-dim);
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            border-radius: 2rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--teal-glow);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            line-height: 1.15;
+        }
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--teal) 0%, var(--coral) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.0625rem;
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        /* ── Container ──────────────────────────── */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.5rem 4rem;
+        }
+
+        /* ── Decision Cards ─────────────────────── */
+        .step-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .step-desc {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .decision-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.875rem;
+        }
+        .decision-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+        .decision-card:hover {
+            border-color: var(--teal);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.08);
+        }
+        .decision-card.selected {
+            border-color: var(--teal);
+            background: var(--teal-dim);
+        }
+        .decision-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 0.75rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .decision-icon svg { width: 24px; height: 24px; color: var(--teal); }
+        .decision-card h3 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .decision-card p {
+            font-size: 0.8125rem;
+            color: var(--text-dim);
+        }
+
+        /* ── Framework Cards ────────────────────── */
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.875rem;
+        }
+        .framework-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .framework-card:hover {
+            border-color: var(--coral);
+            transform: translateY(-2px);
+        }
+        .framework-card.selected {
+            border-color: var(--coral);
+            background: var(--coral-dim);
+        }
+        .framework-card h3 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .framework-card .tag {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            background: rgba(148, 163, 184, 0.08);
+            border-radius: 2rem;
+            font-size: 0.625rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.5rem;
+        }
+        .framework-card p {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        /* ── Questions ──────────────────────────── */
+        .question-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 1rem;
+        }
+        .question-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .progress-bar-bg {
+            flex: 1;
+            height: 4px;
+            background: var(--bg-elevated);
+            border-radius: 2px;
+            margin: 0 1rem;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--teal), var(--coral));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        .question-text {
+            font-family: var(--font-display);
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .question-context {
+            font-size: 0.8125rem;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .answer-option {
+            padding: 0.875rem 1.25rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.875rem;
+            text-align: left;
+            color: var(--text-primary);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .answer-option:hover {
+            border-color: var(--teal);
+            background: var(--teal-dim);
+        }
+        .answer-option.selected {
+            border-color: var(--teal);
+            background: var(--teal-dim);
+        }
+        .answer-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--text-dim);
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+        .answer-option.selected .answer-dot {
+            border-color: var(--teal);
+            background: var(--teal);
+            box-shadow: 0 0 0 3px var(--teal-dim);
+        }
+
+        .question-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        /* ── Buttons ────────────────────────────── */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--teal), #0d9488);
+            color: white;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(20, 184, 166, 0.3); }
+        .btn-secondary {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .btn-secondary:hover { border-color: var(--text-dim); }
+        .btn-cta {
+            background: linear-gradient(135deg, var(--coral), #ea580c);
+            color: white;
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+        }
+        .btn-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(249, 115, 22, 0.3); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .btn-small {
+            padding: 0.375rem 0.875rem;
+            font-size: 0.75rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* ── Results ────────────────────────────── */
+        .results-container {
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-hero {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.25rem;
+        }
+        .result-score {
+            font-size: 4.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--teal) 0%, var(--coral) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.375rem;
+        }
+        .result-verdict {
+            font-family: var(--font-display);
+            font-size: 1.375rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .result-desc {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.875rem;
+            margin-bottom: 1.25rem;
+        }
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+        }
+        .result-card.full { grid-column: 1 / -1; }
+        .result-card h4 {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+        .result-card h4.strength { color: var(--green); }
+        .result-card h4.weakness { color: var(--red); }
+        .result-card h4.opportunity { color: var(--blue); }
+        .result-card h4.threat { color: var(--amber); }
+        .result-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .result-card li {
+            padding: 0.375rem 0;
+            padding-left: 1rem;
+            position: relative;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+        .result-card li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.7rem;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--teal);
+        }
+        .result-card p {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            line-height: 1.65;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .chart-card h4 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .chart-card canvas {
+            max-height: 320px;
+        }
+
+        /* ── Email Capture ──────────────────────── */
+        .email-capture {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.06), rgba(249, 115, 22, 0.06));
+            border: 1px solid rgba(20, 184, 166, 0.15);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        .email-capture h3 {
+            font-family: var(--font-display);
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .email-capture p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+        }
+        .email-form {
+            display: flex;
+            gap: 0.5rem;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        .email-form input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.875rem;
+        }
+        .email-form input::placeholder { color: var(--text-dim); }
+        .email-form input:focus { outline: none; border-color: var(--teal); }
+
+        /* ── Footer ─────────────────────────────── */
+        .leap-footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+        .leap-footer a {
+            color: var(--teal);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .leap-footer p {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        /* ── Responsive ─────────────────────────── */
+        @media (max-width: 640px) {
+            .decision-grid, .framework-grid { grid-template-columns: 1fr; }
+            .result-grid { grid-template-columns: 1fr; }
+            .email-form { flex-direction: column; }
+        }
+
+        /* ── View States ────────────────────────── */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .hidden { display: none !important; }
+
+        /* Social share */
+        .share-row {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .share-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .share-btn:hover { border-color: var(--teal); color: var(--teal); }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <header class="hero">
+        <div class="hero-badge">Free Assessment Tool</div>
+        <h1>Should You <span>Take the Leap</span>?</h1>
+        <p>Analyze your next big life decision using professional risk frameworks. Career change, entrepreneurship, education, and more.</p>
+    </header>
+
+    <div class="container">
+        <!-- ═══ Step 1: Choose Decision ═══ -->
+        <div id="step-decision" class="view active">
+            <h2 class="step-title">What are you considering?</h2>
+            <p class="step-desc">Select the life decision you want to analyze</p>
+
+            <div class="decision-grid" id="decision-grid">
+                <div class="decision-card" data-decision="career_change" onclick="selectDecision(this)">
+                    <div class="decision-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                    </div>
+                    <h3>Career Change</h3>
+                    <p>New role, industry, or company</p>
+                </div>
+                <div class="decision-card" data-decision="entrepreneurship" onclick="selectDecision(this)">
+                    <div class="decision-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <h3>Entrepreneurship</h3>
+                    <p>Starting a business or side hustle</p>
+                </div>
+                <div class="decision-card" data-decision="education" onclick="selectDecision(this)">
+                    <div class="decision-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                    </div>
+                    <h3>Education</h3>
+                    <p>Degree, MBA, certification, bootcamp</p>
+                </div>
+                <div class="decision-card" data-decision="relocation" onclick="selectDecision(this)">
+                    <div class="decision-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+                    </div>
+                    <h3>Relocation</h3>
+                    <p>Moving to a new city, state, or country</p>
+                </div>
+                <div class="decision-card" data-decision="adventure" onclick="selectDecision(this)">
+                    <div class="decision-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                    </div>
+                    <h3>Adventure / Sabbatical</h3>
+                    <p>Gap year, travel, pursue a passion</p>
+                </div>
+                <div class="decision-card" data-decision="retirement" onclick="selectDecision(this)">
+                    <div class="decision-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                    </div>
+                    <h3>Retirement</h3>
+                    <p>Transitioning out of the workforce</p>
+                </div>
+            </div>
+
+            <div style="text-align:center;margin-top:1.5rem;">
+                <button class="btn btn-primary" id="btn-to-framework" disabled onclick="goToFramework()">Continue</button>
+            </div>
+        </div>
+
+        <!-- ═══ Step 2: Choose Framework ═══ -->
+        <div id="step-framework" class="view">
+            <h2 class="step-title">Choose Your Analysis Lens</h2>
+            <p class="step-desc">Each framework provides a different perspective on your decision</p>
+
+            <div class="framework-grid" id="framework-grid">
+                <div class="framework-card" data-framework="swot" onclick="selectFramework(this)">
+                    <span class="tag">12 Questions</span>
+                    <h3>SWOT Analysis</h3>
+                    <p>Map your Strengths, Weaknesses, Opportunities, and Threats for a complete strategic view.</p>
+                </div>
+                <div class="framework-card" data-framework="risk_reward" onclick="selectFramework(this)">
+                    <span class="tag">10 Questions</span>
+                    <h3>Risk-Reward Matrix</h3>
+                    <p>Plot your decision on a risk vs. reward axis to get a clear go/no-go recommendation.</p>
+                </div>
+                <div class="framework-card" data-framework="decision_matrix" onclick="selectFramework(this)">
+                    <span class="tag">12 Questions</span>
+                    <h3>Decision Matrix</h3>
+                    <p>Score and weight the factors that matter most — finances, growth, fulfillment, family impact.</p>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1.5rem;">
+                <button class="btn btn-secondary" onclick="goToDecision()">Back</button>
+                <button class="btn btn-primary" id="btn-to-questions" disabled onclick="goToQuestions()">Start Assessment</button>
+            </div>
+        </div>
+
+        <!-- ═══ Step 3: Questions ═══ -->
+        <div id="step-questions" class="view">
+            <div class="question-container" id="question-container"></div>
+        </div>
+
+        <!-- ═══ Step 4: Results ═══ -->
+        <div id="step-results" class="view">
+            <div class="results-container" id="results-container"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ FOOTER ═══════════════ -->
+    <footer class="leap-footer">
+        <a href="index.html">RAB Framework</a> &mdash; Enterprise Risk Appetite Governance
+        <p>Original Concept by Bukola Olajire | Johns Hopkins Carey Business School</p>
+        <p>Built by F1rst Position</p>
+    </footer>
+
+    <script src="js/leap.js"></script>
+</body>
+</html>
