@@ -646,11 +646,16 @@ function renderDetail(a, recs) {
                 </div>
             `).join('')}
         </div>
-        <div style="text-align:center;margin-top:2rem;">
-            <button class="btn-primary" onclick="exportToPDF('${a.id}')">📄 Export to PDF</button>
+        </div>
+        <div class="detail-actions">
+            <button class="btn-pdf" onclick="generateBoardReport('${a.id}')">Download Board Report (PDF)</button>
+            <button class="btn-primary" onclick="loadAIInsights('${a.id}')">Generate AI Insights</button>
+            <button class="btn-secondary" onclick="exportToPDF('${a.id}')">Export Raw Data</button>
         </div>`;
 
     document.getElementById('detail-content').innerHTML = html;
+    document.getElementById('ai-insights-panel').style.display = 'none';
+    document.getElementById('ai-insights-panel').innerHTML = '';
     setTimeout(() => {
         renderRadarChart(a);
         renderBarChart(a);
@@ -903,3 +908,518 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3500);
 }
+
+// ═══════════════════════════════════════════════════════════════
+//  PREMIUM FEATURES — v2.0
+// ═══════════════════════════════════════════════════════════════
+
+// ── AI-Powered Insights ────────────────────────────────────────
+async function loadAIInsights(assessmentId) {
+    const panel = document.getElementById('ai-insights-panel');
+    panel.style.display = 'block';
+    panel.innerHTML = `<div class="ai-loading"><div class="loader"></div><p>Generating AI insights...</p></div>`;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    try {
+        const { data: a } = await sb.from('assessments').select('*').eq('id', assessmentId).single();
+        const user = currentUser;
+
+        const resp = await fetch(`${CLOUD_SERVER_URL}/ai/insights`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ assessment: a, user: { name: user?.user_metadata?.full_name, organization: user?.user_metadata?.organization } })
+        });
+
+        const result = await resp.json();
+        if (!result.ok) throw new Error(result.error);
+
+        renderAIInsights(result.insights, a);
+    } catch (err) {
+        console.error('AI Insights error:', err);
+        panel.innerHTML = `<div class="ai-loading"><p>Unable to generate insights. Please try again.</p></div>`;
+    }
+}
+
+function renderAIInsights(insights, assessment) {
+    const panel = document.getElementById('ai-insights-panel');
+    const sourceLabel = insights._source === 'gemini' ? 'Gemini AI' : 'RAB Analytics';
+
+    panel.innerHTML = `
+        <div class="ai-section-header">
+            <h3>Executive Risk Intelligence</h3>
+            <span class="ai-badge">${sourceLabel}</span>
+        </div>
+
+        <div class="ai-card narrative">
+            <h4>Executive Summary</h4>
+            <p>${insights.executive_summary || ''}</p>
+        </div>
+
+        <div class="ai-grid">
+            <div class="ai-card">
+                <h4>Key Strengths</h4>
+                <ul>${(insights.strengths || []).map(s => `<li>${s}</li>`).join('')}</ul>
+            </div>
+            <div class="ai-card">
+                <h4>Areas of Concern</h4>
+                <ul>${(insights.concerns || []).map(c => `<li>${c}</li>`).join('')}</ul>
+            </div>
+            <div class="ai-card grade">
+                <h4>Risk-Strategy Alignment</h4>
+                <div class="ai-grade-letter">${insights.risk_alignment_grade || 'B'}</div>
+                <div class="ai-grade-label">Alignment Grade</div>
+            </div>
+            <div class="ai-card">
+                <h4>Benchmark Context</h4>
+                <p>${insights.benchmark_context || ''}</p>
+            </div>
+        </div>
+
+        <div class="ai-card narrative" style="margin-bottom:1.5rem;">
+            <h4>Strategic Risk Narrative</h4>
+            <p>${insights.risk_narrative || ''}</p>
+        </div>
+
+        <h4 style="font-size:0.875rem;font-weight:600;margin-bottom:0.75rem;">Strategic Recommendations</h4>
+        <div class="ai-recs-list">
+            ${(insights.strategic_recommendations || []).map(r => `
+                <div class="ai-rec-item ${r.priority}">
+                    <div class="ai-rec-header">
+                        <span class="ai-rec-title">${r.title}</span>
+                        <span class="priority-badge ${r.priority}">${r.priority}</span>
+                    </div>
+                    <div class="ai-rec-detail">${r.detail}</div>
+                </div>
+            `).join('')}
+        </div>
+
+        ${insights.board_talking_points ? `
+        <div class="ai-card" style="margin-top:1rem;">
+            <h4>Board Talking Points</h4>
+            <ul>${insights.board_talking_points.map(p => `<li>${p}</li>`).join('')}</ul>
+        </div>` : ''}
+    `;
+}
+
+// ── PDF Board Report ───────────────────────────────────────────
+async function generateBoardReport(assessmentId) {
+    showToast('Generating board report...', 'info');
+    try {
+        const { data: a } = await sb.from('assessments').select('*').eq('id', assessmentId).single();
+        const { data: recs } = await sb.from('recommendations').select('*').eq('assessment_id', assessmentId);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const W = 210, H = 297;
+        let y = 0;
+
+        // Header bar
+        pdf.setFillColor(13, 27, 42);
+        pdf.rect(0, 0, W, 40, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.text('RAB Framework', 15, 18);
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('Enterprise Risk Appetite Governance', 15, 26);
+        pdf.text(`Board Report  |  ${new Date().toLocaleDateString()}`, 15, 33);
+
+        // Reset text color
+        pdf.setTextColor(30, 30, 30);
+        y = 50;
+
+        // Subject header
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(16);
+        pdf.text(a.subject_name || 'Assessment', 15, y);
+        y += 7;
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(`${(a.assessment_type || '').replace('_', ' ').toUpperCase()}  |  ${new Date(a.assessment_date || a.created_at).toLocaleDateString()}`, 15, y);
+        y += 12;
+
+        // Overall Score box
+        pdf.setFillColor(240, 245, 255);
+        pdf.roundedRect(15, y, W - 30, 30, 4, 4, 'F');
+        pdf.setTextColor(30, 30, 30);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(28);
+        pdf.text(`${a.overall_score}`, 30, y + 20);
+        pdf.setFontSize(11);
+        pdf.text(`Risk Profile: ${a.risk_profile}`, 60, y + 15);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        pdf.text(`Overall RAB Score out of 100`, 60, y + 22);
+        y += 40;
+
+        // Dimension scores
+        pdf.setTextColor(30, 30, 30);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(12);
+        pdf.text('Dimension Analysis', 15, y);
+        y += 8;
+
+        const dims = [
+            { name: 'Strategic Risk', score: a.strategic_score, color: [59, 130, 246] },
+            { name: 'Operational Risk', score: a.operational_score, color: [16, 185, 129] },
+            { name: 'Financial Risk', score: a.financial_score, color: [217, 119, 6] },
+            { name: 'Compliance Risk', score: a.compliance_score, color: [124, 58, 237] },
+            { name: 'Resilience Risk', score: a.resilience_score, color: [8, 145, 178] }
+        ];
+
+        dims.forEach(d => {
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(9);
+            pdf.setTextColor(80, 80, 80);
+            pdf.text(d.name, 15, y + 4);
+            pdf.text(`${d.score}/100`, W - 30, y + 4);
+            // Bar background
+            pdf.setFillColor(230, 230, 235);
+            pdf.roundedRect(60, y, 110, 5, 2, 2, 'F');
+            // Bar fill
+            pdf.setFillColor(...d.color);
+            pdf.roundedRect(60, y, Math.max(110 * d.score / 100, 2), 5, 2, 2, 'F');
+            y += 10;
+        });
+        y += 5;
+
+        // Recommendations
+        if (recs && recs.length > 0) {
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(12);
+            pdf.setTextColor(30, 30, 30);
+            pdf.text('Recommended Actions', 15, y);
+            y += 8;
+
+            recs.forEach(r => {
+                if (y > H - 30) { pdf.addPage(); y = 20; }
+                pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(9);
+                pdf.setTextColor(30, 30, 30);
+                pdf.text(`${r.dimension}  [${r.priority}]`, 15, y);
+                y += 5;
+                pdf.setFont('helvetica', 'normal');
+                pdf.setFontSize(8);
+                pdf.setTextColor(60, 60, 60);
+                const lines = pdf.splitTextToSize(r.recommendation_text, W - 30);
+                pdf.text(lines, 15, y);
+                y += lines.length * 4 + 4;
+            });
+        }
+
+        // Footer
+        pdf.setFontSize(7);
+        pdf.setTextColor(150, 150, 150);
+        pdf.text('RAB Framework  |  Enterprise Risk Appetite Governance  |  Johns Hopkins Carey Business School', W / 2, H - 10, { align: 'center' });
+        pdf.text('Confidential — For Board Use Only', W / 2, H - 6, { align: 'center' });
+
+        pdf.save(`RAB-Board-Report-${a.subject_name?.replace(/\s+/g, '-') || 'Assessment'}.pdf`);
+        showToast('Board report downloaded', 'success');
+    } catch (err) {
+        console.error('Board report error:', err);
+        showToast('Error generating report', 'error');
+    }
+}
+
+// ── Risk Trend Analysis ────────────────────────────────────────
+let trendsOverallChart = null;
+let trendsDimensionChart = null;
+
+async function loadTrends() {
+    try {
+        const { data: assessments } = await sb
+            .from('assessments')
+            .select('*')
+            .order('created_at', { ascending: true })
+            .limit(50);
+
+        if (!assessments || assessments.length === 0) {
+            document.getElementById('trends-stats').innerHTML = `
+                <div class="empty-state" style="grid-column:1/-1;">
+                    <h3>No Assessment Data</h3>
+                    <p>Complete assessments to see trend analysis</p>
+                </div>`;
+            return;
+        }
+
+        renderTrendsCharts(assessments);
+        renderTrendsStats(assessments);
+    } catch (err) {
+        console.error('Trends error:', err);
+    }
+}
+
+function renderTrendsCharts(assessments) {
+    const labels = assessments.map(a => new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    const chartColors = {
+        grid: 'rgba(148, 163, 184, 0.06)',
+        text: '#94a3b8'
+    };
+
+    // Overall score over time
+    if (trendsOverallChart) trendsOverallChart.destroy();
+    const ctx1 = document.getElementById('trends-overall-chart');
+    if (ctx1) {
+        trendsOverallChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Overall RAB Score',
+                    data: assessments.map(a => a.overall_score),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#3b82f6'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { min: 0, max: 100, grid: { color: chartColors.grid }, ticks: { color: chartColors.text, font: { size: 11 } } },
+                    x: { grid: { display: false }, ticks: { color: chartColors.text, font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    // Dimension scores over time
+    if (trendsDimensionChart) trendsDimensionChart.destroy();
+    const ctx2 = document.getElementById('trends-dimension-chart');
+    if (ctx2) {
+        trendsDimensionChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'Strategic', data: assessments.map(a => a.strategic_score), borderColor: '#3b82f6', borderWidth: 2, tension: 0.4, pointRadius: 3 },
+                    { label: 'Operational', data: assessments.map(a => a.operational_score), borderColor: '#10b981', borderWidth: 2, tension: 0.4, pointRadius: 3 },
+                    { label: 'Financial', data: assessments.map(a => a.financial_score), borderColor: '#d97706', borderWidth: 2, tension: 0.4, pointRadius: 3 },
+                    { label: 'Compliance', data: assessments.map(a => a.compliance_score), borderColor: '#7c3aed', borderWidth: 2, tension: 0.4, pointRadius: 3 },
+                    { label: 'Resilience', data: assessments.map(a => a.resilience_score), borderColor: '#0891b2', borderWidth: 2, tension: 0.4, pointRadius: 3 }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: chartColors.text, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } } },
+                scales: {
+                    y: { min: 0, max: 100, grid: { color: chartColors.grid }, ticks: { color: chartColors.text, font: { size: 11 } } },
+                    x: { grid: { display: false }, ticks: { color: chartColors.text, font: { size: 11 } } }
+                }
+            }
+        });
+    }
+}
+
+function renderTrendsStats(assessments) {
+    const latest = assessments[assessments.length - 1];
+    const prev = assessments.length > 1 ? assessments[assessments.length - 2] : null;
+    const avg = Math.round(assessments.reduce((s, a) => s + a.overall_score, 0) / assessments.length);
+    const change = prev ? latest.overall_score - prev.overall_score : 0;
+    const changeClass = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+    const changeText = change > 0 ? `+${change} from previous` : change < 0 ? `${change} from previous` : 'No change';
+
+    // Profile distribution
+    const profiles = { Conservative: 0, Moderate: 0, Aggressive: 0 };
+    assessments.forEach(a => { if (profiles[a.risk_profile] !== undefined) profiles[a.risk_profile]++; });
+
+    document.getElementById('trends-stats').innerHTML = `
+        <div class="trend-stat-card">
+            <div class="trend-stat-value">${latest.overall_score}</div>
+            <div class="trend-stat-label">Latest Score</div>
+            <div class="trend-stat-change ${changeClass}">${changeText}</div>
+        </div>
+        <div class="trend-stat-card">
+            <div class="trend-stat-value">${avg}</div>
+            <div class="trend-stat-label">Average Score</div>
+            <div class="trend-stat-change neutral">${assessments.length} assessments</div>
+        </div>
+        <div class="trend-stat-card">
+            <div class="trend-stat-value">${profiles.Conservative}</div>
+            <div class="trend-stat-label">Conservative</div>
+            <div class="trend-stat-change neutral">Assessments</div>
+        </div>
+        <div class="trend-stat-card">
+            <div class="trend-stat-value">${profiles.Moderate}</div>
+            <div class="trend-stat-label">Moderate</div>
+            <div class="trend-stat-change neutral">Assessments</div>
+        </div>
+        <div class="trend-stat-card">
+            <div class="trend-stat-value">${profiles.Aggressive}</div>
+            <div class="trend-stat-label">Aggressive</div>
+            <div class="trend-stat-change neutral">Assessments</div>
+        </div>
+    `;
+}
+
+// ── Scenario Simulator ─────────────────────────────────────────
+let simRadarChart = null;
+
+function updateSimulation() {
+    const dims = ['strategic', 'operational', 'financial', 'compliance', 'resilience'];
+    const scores = {};
+    dims.forEach(d => {
+        const val = parseInt(document.getElementById(`sim-${d}`).value);
+        scores[d] = val;
+        document.getElementById(`sim-${d}-val`).textContent = val;
+    });
+
+    const overall = Math.round((scores.strategic + scores.operational + scores.financial + scores.compliance + scores.resilience) / 5);
+    const profile = overall >= 70 ? 'Aggressive' : overall >= 40 ? 'Moderate' : 'Conservative';
+    const profileDescs = {
+        Conservative: 'Risk-averse posture prioritizing stability and protection',
+        Moderate: 'Balanced approach with measured risk-taking and safeguards',
+        Aggressive: 'Growth-oriented stance favoring bold strategic moves'
+    };
+
+    document.getElementById('sim-overall-score').textContent = overall;
+    document.getElementById('sim-profile').textContent = profile;
+    document.getElementById('sim-profile-desc').textContent = profileDescs[profile];
+
+    // Radar chart
+    renderSimRadar(scores);
+
+    // Recommendations
+    renderSimRecommendations(scores, overall, profile);
+
+    // Benchmarking
+    renderSimBenchmark(scores, overall, profile);
+}
+
+function renderSimRadar(scores) {
+    if (simRadarChart) simRadarChart.destroy();
+    const ctx = document.getElementById('sim-radar-chart');
+    if (!ctx) return;
+    simRadarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Strategic', 'Operational', 'Financial', 'Compliance', 'Resilience'],
+            datasets: [
+                {
+                    label: 'Simulated Profile',
+                    data: [scores.strategic, scores.operational, scores.financial, scores.compliance, scores.resilience],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#3b82f6'
+                },
+                {
+                    label: 'Fortune 500 Average',
+                    data: [52, 45, 48, 38, 44],
+                    borderColor: '#c9a84c',
+                    backgroundColor: 'rgba(201, 168, 76, 0.06)',
+                    borderWidth: 1.5,
+                    borderDash: [4, 4],
+                    pointRadius: 3,
+                    pointBackgroundColor: '#c9a84c'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    min: 0, max: 100,
+                    grid: { color: 'rgba(148, 163, 184, 0.06)' },
+                    angleLines: { color: 'rgba(148, 163, 184, 0.06)' },
+                    pointLabels: { color: '#94a3b8', font: { size: 11, weight: '500' } },
+                    ticks: { display: false }
+                }
+            },
+            plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 }, usePointStyle: true } } }
+        }
+    });
+}
+
+function renderSimRecommendations(scores, overall, profile) {
+    const dims = Object.entries(scores).sort((a, b) => a[1] - b[1]);
+    const lowest = dims[0];
+    const highest = dims[dims.length - 1];
+    const gap = highest[1] - lowest[1];
+
+    let recsHtml = '<h4>Scenario Recommendations</h4>';
+    recsHtml += `<div class="sim-rec-item"><strong>${capitalize(lowest[0])} Risk</strong> is the weakest dimension (${lowest[1]}/100). Consider increasing risk tolerance to improve balance.</div>`;
+    recsHtml += `<div class="sim-rec-item"><strong>${capitalize(highest[0])} Risk</strong> is the strongest dimension (${highest[1]}/100). Ensure governance controls match this appetite level.</div>`;
+
+    if (gap > 30) {
+        recsHtml += `<div class="sim-rec-item"><strong>Dimensional Gap:</strong> ${gap}-point spread between highest and lowest dimensions indicates potential governance misalignment.</div>`;
+    }
+
+    if (profile === 'Aggressive') {
+        recsHtml += `<div class="sim-rec-item"><strong>Aggressive Profile:</strong> Ensure board-level risk oversight is proportional. Consider quarterly RAB reassessments.</div>`;
+    } else if (profile === 'Conservative') {
+        recsHtml += `<div class="sim-rec-item"><strong>Conservative Profile:</strong> Review if risk appetite is constraining strategic growth. Benchmark against industry leaders.</div>`;
+    }
+
+    document.getElementById('sim-recommendations').innerHTML = recsHtml;
+}
+
+function renderSimBenchmark(scores, overall, profile) {
+    const benchmarks = { strategic: 52, operational: 45, financial: 48, compliance: 38, resilience: 44 };
+    const f500Avg = 45;
+
+    let html = '<h4>Industry Benchmarking</h4>';
+    html += `<p>Your simulated score of <strong>${overall}</strong> is `;
+    if (overall > f500Avg + 15) html += `<strong>significantly above</strong>`;
+    else if (overall > f500Avg + 5) html += `<strong>above</strong>`;
+    else if (overall > f500Avg - 5) html += `<strong>in line with</strong>`;
+    else html += `<strong>below</strong>`;
+    html += ` the Fortune 500 average of ${f500Avg}. `;
+
+    const aboveBench = Object.entries(scores).filter(([k, v]) => v > benchmarks[k]);
+    const belowBench = Object.entries(scores).filter(([k, v]) => v < benchmarks[k]);
+
+    if (aboveBench.length > 0) {
+        html += `You exceed industry benchmarks in ${aboveBench.map(([k]) => capitalize(k)).join(', ')}. `;
+    }
+    if (belowBench.length > 0) {
+        html += `You fall below benchmarks in ${belowBench.map(([k]) => capitalize(k)).join(', ')}.`;
+    }
+    html += '</p>';
+
+    document.getElementById('sim-benchmark').innerHTML = html;
+}
+
+function setSimPreset(preset) {
+    const presets = {
+        conservative: { strategic: 25, operational: 20, financial: 15, compliance: 10, resilience: 20 },
+        balanced:     { strategic: 50, operational: 50, financial: 50, compliance: 50, resilience: 50 },
+        aggressive:   { strategic: 85, operational: 70, financial: 80, compliance: 55, resilience: 65 },
+        growth:       { strategic: 90, operational: 60, financial: 75, compliance: 40, resilience: 55 }
+    };
+    const vals = presets[preset] || presets.balanced;
+    Object.entries(vals).forEach(([k, v]) => {
+        document.getElementById(`sim-${k}`).value = v;
+    });
+    updateSimulation();
+}
+
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// ── View Navigation Enhancement ────────────────────────────────
+// Override switchView to load data for new views
+const _originalSwitchView = typeof switchView === 'function' ? switchView : null;
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const view = this.dataset.view;
+        if (view === 'trends') setTimeout(loadTrends, 100);
+        if (view === 'simulator') setTimeout(() => {
+            updateSimulation();
+        }, 100);
+    });
+});
+
+// Initialize simulator on first load
+setTimeout(() => {
+    if (document.getElementById('sim-strategic')) {
+        updateSimulation();
+    }
+}, 500);

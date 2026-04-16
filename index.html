@@ -121,6 +121,8 @@
                     <button class="nav-btn" data-view="assessment" id="nav-assessment">New Assessment</button>
                     <button class="nav-btn" data-view="results" id="nav-results">Results</button>
                     <button class="nav-btn" data-view="compare" id="nav-compare">Compare</button>
+                    <button class="nav-btn" data-view="trends" id="nav-trends">Trends</button>
+                    <button class="nav-btn" data-view="simulator" id="nav-simulator">Simulator</button>
                     <button class="nav-btn" data-view="about" id="nav-about">About</button>
                 </div>
                 <div class="nav-user">
@@ -415,6 +417,80 @@
                 <div class="detail-container">
                     <button class="btn-secondary back-btn" onclick="backToResults()">Back to Results</button>
                     <div id="detail-content"></div>
+                    <!-- AI Insights Panel -->
+                    <div id="ai-insights-panel" class="ai-insights-panel" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ── Trends View ─────────────────────────── -->
+            <section id="view-trends" class="view">
+                <div class="section-header">
+                    <h2>Risk Trend Analysis</h2>
+                    <p class="section-desc">Track how your organization's risk appetite evolves over time</p>
+                </div>
+                <div class="trends-container">
+                    <div class="trends-chart-card">
+                        <h3>Overall RAB Score Over Time</h3>
+                        <canvas id="trends-overall-chart"></canvas>
+                    </div>
+                    <div class="trends-chart-card">
+                        <h3>Dimension Scores Over Time</h3>
+                        <canvas id="trends-dimension-chart"></canvas>
+                    </div>
+                    <div class="trends-stats" id="trends-stats"></div>
+                </div>
+            </section>
+
+            <!-- ── Simulator View ──────────────────────── -->
+            <section id="view-simulator" class="view">
+                <div class="section-header">
+                    <h2>Scenario Simulator</h2>
+                    <p class="section-desc">Explore how adjusting risk tolerance impacts your overall profile and recommendations</p>
+                </div>
+                <div class="simulator-container">
+                    <div class="simulator-controls">
+                        <h3>Adjust Risk Dimensions</h3>
+                        <div class="sim-slider-group">
+                            <div class="sim-slider-item">
+                                <label>Strategic Risk <span class="sim-value" id="sim-strategic-val">50</span></label>
+                                <input type="range" id="sim-strategic" min="0" max="100" value="50" class="weight-slider" oninput="updateSimulation()">
+                            </div>
+                            <div class="sim-slider-item">
+                                <label>Operational Risk <span class="sim-value" id="sim-operational-val">50</span></label>
+                                <input type="range" id="sim-operational" min="0" max="100" value="50" class="weight-slider" oninput="updateSimulation()">
+                            </div>
+                            <div class="sim-slider-item">
+                                <label>Financial Risk <span class="sim-value" id="sim-financial-val">50</span></label>
+                                <input type="range" id="sim-financial" min="0" max="100" value="50" class="weight-slider" oninput="updateSimulation()">
+                            </div>
+                            <div class="sim-slider-item">
+                                <label>Compliance Risk <span class="sim-value" id="sim-compliance-val">50</span></label>
+                                <input type="range" id="sim-compliance" min="0" max="100" value="50" class="weight-slider" oninput="updateSimulation()">
+                            </div>
+                            <div class="sim-slider-item">
+                                <label>Resilience Risk <span class="sim-value" id="sim-resilience-val">50</span></label>
+                                <input type="range" id="sim-resilience" min="0" max="100" value="50" class="weight-slider" oninput="updateSimulation()">
+                            </div>
+                        </div>
+                        <div class="sim-presets">
+                            <button class="btn-small" onclick="setSimPreset('conservative')">Conservative</button>
+                            <button class="btn-small" onclick="setSimPreset('balanced')">Balanced</button>
+                            <button class="btn-small" onclick="setSimPreset('aggressive')">Aggressive</button>
+                            <button class="btn-small" onclick="setSimPreset('growth')">Growth Mode</button>
+                        </div>
+                    </div>
+                    <div class="simulator-output">
+                        <div class="sim-score-card">
+                            <div class="sim-overall-score" id="sim-overall-score">50</div>
+                            <div class="sim-profile" id="sim-profile">Moderate</div>
+                            <div class="sim-profile-desc" id="sim-profile-desc">Balanced risk approach</div>
+                        </div>
+                        <div class="sim-chart-card">
+                            <canvas id="sim-radar-chart"></canvas>
+                        </div>
+                        <div class="sim-recommendations" id="sim-recommendations"></div>
+                        <div class="sim-benchmark" id="sim-benchmark"></div>
+                    </div>
                 </div>
             </section>
         </main>
