@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Life Leap — Should You Take the Leap?</title>
-    <meta name="description" content="Free risk assessment tool to analyze your next big life decision — career change, entrepreneurship, education, relocation, or adventure. Powered by SWOT, Risk-Reward, and Decision Matrix frameworks.">
-    <meta property="og:title" content="Life Leap — Should You Take the Leap?">
-    <meta property="og:description" content="Analyze your next big life decision with professional risk frameworks. Free.">
+    <title>Leap Score — Should You Take the Leap?</title>
+    <meta name="description" content="Free risk assessment tool. Analyze your next big life decision with SWOT, Risk-Reward Matrix, and Decision Matrix frameworks. Get your Leap Score now.">
+    <meta property="og:title" content="Leap Score — What's Your Leap Score?">
+    <meta property="og:description" content="I just got my Leap Score. Analyze your next big life decision with professional risk frameworks. Free.">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shaunf1p.github.io/rab-framework/leap.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Leap Score — What's Your Leap Score?">
+    <meta name="twitter:description" content="Should you take the leap? Career change, entrepreneurship, education — get your score now.">
 
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
@@ -19,29 +23,30 @@
         :root {
             --font-display: 'Playfair Display', Georgia, serif;
             --font-body: 'Inter', -apple-system, sans-serif;
-            --bg-deep: #0a0f1a;
-            --bg-surface: #111827;
-            --bg-card: #1a2332;
-            --bg-elevated: #1e293b;
+            --bg-deep: #050a14;
+            --bg-surface: #0a1120;
+            --bg-card: #101c2e;
+            --bg-elevated: #152238;
             --border: rgba(148, 163, 184, 0.08);
+            --border-glow: rgba(20, 184, 166, 0.15);
             --text-primary: #e2e8f0;
             --text-secondary: #94a3b8;
             --text-dim: #64748b;
             --teal: #14b8a6;
             --teal-glow: #2dd4bf;
-            --teal-dim: rgba(20, 184, 166, 0.1);
+            --teal-dim: rgba(20, 184, 166, 0.08);
             --coral: #f97316;
-            --coral-dim: rgba(249, 115, 22, 0.1);
+            --coral-glow: #fb923c;
+            --coral-dim: rgba(249, 115, 22, 0.08);
             --blue: #3b82f6;
             --green: #22c55e;
             --red: #ef4444;
             --amber: #f59e0b;
             --purple: #8b5cf6;
-            --gold: #c9a84c;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --transition: all 0.2s ease;
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
@@ -50,104 +55,255 @@
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
         }
+
+        /* ── Animated Background ────────────────── */
+        .bg-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: orbFloat 20s ease-in-out infinite;
+        }
+        .orb-1 { width: 500px; height: 500px; background: var(--teal); top: -10%; left: -10%; animation-delay: 0s; }
+        .orb-2 { width: 400px; height: 400px; background: var(--coral); top: 60%; right: -10%; animation-delay: -7s; }
+        .orb-3 { width: 300px; height: 300px; background: var(--purple); bottom: -5%; left: 30%; animation-delay: -14s; }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -40px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Reduced motion */
+        body.reduce-motion .orb,
+        body.reduce-motion .float-element,
+        body.reduce-motion .answer-option,
+        body.reduce-motion .decision-card,
+        body.reduce-motion .framework-card,
+        body.reduce-motion .result-card,
+        body.reduce-motion .result-hero {
+            animation: none !important;
+            transition: none !important;
+        }
+        body.reduce-motion .bg-orbs { display: none; }
+        body.reduce-motion .particle-field { display: none; }
+
+        /* Motion Toggle */
+        .motion-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(10, 17, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.6875rem;
+            color: var(--text-dim);
+            font-family: inherit;
+            transition: var(--transition);
+        }
+        .motion-toggle:hover { border-color: var(--teal); color: var(--text-secondary); }
+        .motion-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--teal);
+            transition: var(--transition);
+        }
+        body.reduce-motion .motion-dot { background: var(--text-dim); }
+
+        /* ── Particle Field ─────────────────────── */
+        .particle-field {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(20, 184, 166, 0.3);
+            border-radius: 50%;
+            animation: particleDrift 15s linear infinite;
+        }
+        @keyframes particleDrift {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+        }
+
+        /* ── Relative wrapper ───────────────────── */
+        .page-content { position: relative; z-index: 1; }
 
         /* ── Hero ───────────────────────────────── */
         .hero {
             text-align: center;
-            padding: 4rem 1.5rem 2.5rem;
-            background: linear-gradient(180deg, rgba(20, 184, 166, 0.04) 0%, transparent 100%);
+            padding: 5rem 1.5rem 3rem;
+            position: relative;
         }
         .hero-badge {
             display: inline-block;
-            padding: 0.25rem 0.875rem;
-            background: var(--teal-dim);
-            border: 1px solid rgba(20, 184, 166, 0.2);
+            padding: 0.3125rem 1rem;
+            background: linear-gradient(135deg, var(--teal-dim), var(--coral-dim));
+            border: 1px solid var(--border-glow);
             border-radius: 2rem;
             font-size: 0.6875rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--teal-glow);
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
+            animation: badgePulse 3s ease-in-out infinite;
+        }
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.15); }
+            50% { box-shadow: 0 0 20px 4px rgba(20, 184, 166, 0.1); }
         }
         .hero h1 {
             font-family: var(--font-display);
-            font-size: clamp(2rem, 5vw, 3rem);
+            font-size: clamp(2.25rem, 6vw, 3.5rem);
             font-weight: 800;
-            margin-bottom: 0.75rem;
-            line-height: 1.15;
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+            letter-spacing: -0.01em;
         }
         .hero h1 span {
-            background: linear-gradient(135deg, var(--teal) 0%, var(--coral) 100%);
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-glow) 40%, var(--coral) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .hero p {
+        .hero-sub {
+            font-family: var(--font-display);
+            font-size: 1.125rem;
             color: var(--text-secondary);
-            font-size: 1.0625rem;
-            max-width: 540px;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+        .hero p {
+            color: var(--text-dim);
+            font-size: 0.9375rem;
+            max-width: 520px;
             margin: 0 auto;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .hero-stat-label {
+            font-size: 0.6875rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         /* ── Container ──────────────────────────── */
         .container {
-            max-width: 900px;
+            max-width: 940px;
             margin: 0 auto;
             padding: 0 1.5rem 4rem;
         }
 
-        /* ── Decision Cards ─────────────────────── */
+        /* ── Step Headers ───────────────────────── */
         .step-title {
             font-family: var(--font-display);
-            font-size: 1.25rem;
+            font-size: 1.375rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.375rem;
         }
         .step-desc {
-            color: var(--text-secondary);
+            color: var(--text-dim);
             font-size: 0.875rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
         }
 
+        /* ── Decision Cards ─────────────────────── */
         .decision-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 0.875rem;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
         }
         .decision-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 1.5rem;
+            padding: 1.75rem 1.5rem;
             cursor: pointer;
             transition: var(--transition);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .decision-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--coral));
+            opacity: 0;
+            transition: var(--transition);
         }
         .decision-card:hover {
-            border-color: var(--teal);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.08);
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(20, 184, 166, 0.08);
         }
+        .decision-card:hover::before { opacity: 1; }
         .decision-card.selected {
             border-color: var(--teal);
-            background: var(--teal-dim);
+            background: linear-gradient(135deg, var(--teal-dim), transparent);
         }
+        .decision-card.selected::before { opacity: 1; }
         .decision-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 0.75rem;
-            background: var(--bg-elevated);
-            border-radius: var(--radius-sm);
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, var(--bg-elevated), var(--bg-surface));
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid var(--border);
         }
         .decision-icon svg { width: 24px; height: 24px; color: var(--teal); }
         .decision-card h3 {
-            font-size: 0.9375rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 700;
             margin-bottom: 0.25rem;
         }
         .decision-card p {
@@ -158,44 +314,63 @@
         /* ── Framework Cards ────────────────────── */
         .framework-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 0.875rem;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1rem;
         }
         .framework-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 1.25rem;
+            padding: 1.5rem;
             cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .framework-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--coral), var(--amber));
+            opacity: 0;
             transition: var(--transition);
         }
         .framework-card:hover {
-            border-color: var(--coral);
-            transform: translateY(-2px);
+            border-color: rgba(249, 115, 22, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(249, 115, 22, 0.06);
         }
+        .framework-card:hover::before { opacity: 1; }
         .framework-card.selected {
             border-color: var(--coral);
-            background: var(--coral-dim);
+            background: linear-gradient(135deg, var(--coral-dim), transparent);
         }
+        .framework-card.selected::before { opacity: 1; }
         .framework-card h3 {
-            font-size: 0.9375rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.375rem;
         }
         .framework-card .tag {
             display: inline-block;
-            padding: 0.125rem 0.5rem;
-            background: rgba(148, 163, 184, 0.08);
+            padding: 0.1875rem 0.625rem;
+            background: rgba(148, 163, 184, 0.06);
+            border: 1px solid var(--border);
             border-radius: 2rem;
             font-size: 0.625rem;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.625rem;
+            font-weight: 600;
         }
         .framework-card p {
             font-size: 0.8125rem;
             color: var(--text-secondary);
+            line-height: 1.5;
         }
 
         /* ── Questions ──────────────────────────── */
@@ -203,14 +378,18 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin-bottom: 1rem;
+            padding: 2.5rem;
+            animation: slideUp 0.4s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .question-progress {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
         }
         .progress-bar-bg {
             flex: 1;
@@ -218,38 +397,41 @@
             background: var(--bg-elevated);
             border-radius: 2px;
             margin: 0 1rem;
+            overflow: hidden;
         }
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--teal), var(--coral));
             border-radius: 2px;
-            transition: width 0.3s ease;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .progress-text {
             font-size: 0.75rem;
             color: var(--text-dim);
             white-space: nowrap;
+            font-weight: 500;
         }
 
         .question-text {
             font-family: var(--font-display);
-            font-size: 1.125rem;
-            font-weight: 600;
+            font-size: 1.1875rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
+            line-height: 1.35;
         }
         .question-context {
             font-size: 0.8125rem;
             color: var(--text-dim);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
         }
 
         .answer-options {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.625rem;
         }
         .answer-option {
-            padding: 0.875rem 1.25rem;
+            padding: 1rem 1.25rem;
             background: var(--bg-elevated);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
@@ -261,39 +443,53 @@
             font-family: inherit;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.875rem;
         }
         .answer-option:hover {
-            border-color: var(--teal);
+            border-color: var(--border-glow);
             background: var(--teal-dim);
+            transform: translateX(4px);
         }
         .answer-option.selected {
             border-color: var(--teal);
             background: var(--teal-dim);
+            box-shadow: 0 0 0 1px var(--teal), 0 4px 16px rgba(20, 184, 166, 0.1);
         }
         .answer-dot {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             border: 2px solid var(--text-dim);
             flex-shrink: 0;
             transition: var(--transition);
+            position: relative;
         }
         .answer-option.selected .answer-dot {
             border-color: var(--teal);
             background: var(--teal);
-            box-shadow: 0 0 0 3px var(--teal-dim);
+            box-shadow: 0 0 0 4px var(--teal-dim);
+        }
+        .answer-option.selected .answer-dot::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
         }
 
         .question-nav {
             display: flex;
             justify-content: space-between;
-            margin-top: 1.5rem;
+            margin-top: 1.75rem;
         }
 
         /* ── Buttons ────────────────────────────── */
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 0.8125rem 1.75rem;
             border: none;
             border-radius: var(--radius-sm);
             font-family: inherit;
@@ -301,28 +497,31 @@
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
+            letter-spacing: 0.01em;
         }
         .btn-primary {
             background: linear-gradient(135deg, var(--teal), #0d9488);
             color: white;
+            box-shadow: 0 4px 16px rgba(20, 184, 166, 0.15);
         }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(20, 184, 166, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(20, 184, 166, 0.25); }
         .btn-secondary {
             background: var(--bg-elevated);
             border: 1px solid var(--border);
             color: var(--text-secondary);
         }
-        .btn-secondary:hover { border-color: var(--text-dim); }
+        .btn-secondary:hover { border-color: var(--text-dim); transform: translateY(-1px); }
         .btn-cta {
             background: linear-gradient(135deg, var(--coral), #ea580c);
             color: white;
-            padding: 0.875rem 2rem;
-            font-size: 1rem;
+            padding: 0.9375rem 2rem;
+            font-size: 0.9375rem;
+            box-shadow: 0 4px 16px rgba(249, 115, 22, 0.2);
         }
-        .btn-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(249, 115, 22, 0.3); }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(249, 115, 22, 0.3); }
+        .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
         .btn-small {
-            padding: 0.375rem 0.875rem;
+            padding: 0.4375rem 1rem;
             font-size: 0.75rem;
             background: var(--bg-elevated);
             border: 1px solid var(--border);
@@ -330,77 +529,118 @@
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-family: inherit;
+            font-weight: 600;
         }
 
         /* ── Results ────────────────────────────── */
-        .results-container {
-            animation: fadeIn 0.5s ease;
-        }
+        .results-container { animation: fadeIn 0.6s ease; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(16px); }
+            from { opacity: 0; transform: translateY(24px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .result-hero {
             text-align: center;
-            padding: 2.5rem 2rem;
+            padding: 3rem 2rem;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             margin-bottom: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .result-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(20, 184, 166, 0.04) 0%, transparent 60%);
+            animation: resultGlow 4s ease-in-out infinite;
+        }
+        @keyframes resultGlow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
         }
         .result-score {
-            font-size: 4.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--teal) 0%, var(--coral) 100%);
+            font-size: 5.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-glow) 50%, var(--coral) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1;
-            margin-bottom: 0.375rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        .result-label {
+            font-size: 0.6875rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            position: relative;
+            z-index: 1;
         }
         .result-verdict {
             font-family: var(--font-display);
-            font-size: 1.375rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.375rem;
+            position: relative;
+            z-index: 1;
         }
         .result-desc {
             color: var(--text-secondary);
             font-size: 0.875rem;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            line-height: 1.6;
         }
 
         .result-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.875rem;
+            gap: 1rem;
             margin-bottom: 1.25rem;
         }
         .result-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 1.25rem;
+            padding: 1.5rem;
+            animation: cardReveal 0.5s ease forwards;
+            opacity: 0;
+        }
+        .result-card:nth-child(1) { animation-delay: 0.1s; }
+        .result-card:nth-child(2) { animation-delay: 0.2s; }
+        .result-card:nth-child(3) { animation-delay: 0.3s; }
+        .result-card:nth-child(4) { animation-delay: 0.4s; }
+        @keyframes cardReveal {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .result-card.full { grid-column: 1 / -1; }
         .result-card h4 {
             font-size: 0.8125rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             margin-bottom: 0.75rem;
         }
         .result-card h4.strength { color: var(--green); }
         .result-card h4.weakness { color: var(--red); }
         .result-card h4.opportunity { color: var(--blue); }
         .result-card h4.threat { color: var(--amber); }
-        .result-card ul {
-            list-style: none;
-            padding: 0;
-        }
+        .result-card ul { list-style: none; padding: 0; }
         .result-card li {
             padding: 0.375rem 0;
-            padding-left: 1rem;
+            padding-left: 1.125rem;
             position: relative;
             font-size: 0.875rem;
             color: var(--text-primary);
@@ -410,62 +650,59 @@
             position: absolute;
             left: 0;
             top: 0.7rem;
-            width: 4px;
-            height: 4px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
             background: var(--teal);
         }
-        .result-card p {
-            font-size: 0.875rem;
-            color: var(--text-primary);
-            line-height: 1.65;
-        }
+        .result-card p { font-size: 0.875rem; color: var(--text-primary); line-height: 1.65; }
 
         .chart-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 1.5rem;
+            padding: 1.75rem;
             margin-bottom: 1.25rem;
         }
-        .chart-card h4 {
-            font-size: 0.9375rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        .chart-card canvas {
-            max-height: 320px;
-        }
+        .chart-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 1.125rem; }
+        .chart-card canvas { max-height: 340px; }
 
         /* ── Email Capture ──────────────────────── */
         .email-capture {
             background: linear-gradient(135deg, rgba(20, 184, 166, 0.06), rgba(249, 115, 22, 0.06));
-            border: 1px solid rgba(20, 184, 166, 0.15);
+            border: 1px solid var(--border-glow);
             border-radius: var(--radius-lg);
-            padding: 2rem;
+            padding: 2.5rem;
             text-align: center;
-            margin: 1.5rem 0;
+            margin: 1.75rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .email-capture::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--teal), var(--coral));
         }
         .email-capture h3 {
             font-family: var(--font-display);
-            font-size: 1.125rem;
+            font-size: 1.1875rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
-        .email-capture p {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-bottom: 1.25rem;
-        }
+        .email-capture p { color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem; }
         .email-form {
             display: flex;
-            gap: 0.5rem;
-            max-width: 420px;
+            gap: 0.625rem;
+            max-width: 440px;
             margin: 0 auto;
         }
         .email-form input {
             flex: 1;
-            padding: 0.75rem 1rem;
+            padding: 0.875rem 1.125rem;
             background: var(--bg-surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
@@ -474,173 +711,234 @@
             font-size: 0.875rem;
         }
         .email-form input::placeholder { color: var(--text-dim); }
-        .email-form input:focus { outline: none; border-color: var(--teal); }
+        .email-form input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
+
+        /* ── Social Share ───────────────────────── */
+        .share-section {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .share-section h4 {
+            font-size: 0.8125rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.875rem;
+            font-weight: 600;
+        }
+        .share-row { display: flex; gap: 0.625rem; justify-content: center; flex-wrap: wrap; }
+        .share-btn {
+            padding: 0.625rem 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .share-btn:hover { border-color: var(--teal); color: var(--teal); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(20, 184, 166, 0.08); }
+        .share-btn svg { width: 16px; height: 16px; }
 
         /* ── Footer ─────────────────────────────── */
         .leap-footer {
             text-align: center;
-            padding: 2rem 1.5rem;
+            padding: 2.5rem 1.5rem;
             border-top: 1px solid var(--border);
             margin-top: 3rem;
         }
-        .leap-footer a {
-            color: var(--teal);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .leap-footer p {
-            color: var(--text-dim);
-            font-size: 0.75rem;
-            margin-top: 0.5rem;
-        }
+        .leap-footer a { color: var(--teal); text-decoration: none; font-weight: 600; }
+        .leap-footer p { color: var(--text-dim); font-size: 0.75rem; margin-top: 0.375rem; }
+
+        /* ── View States ────────────────────────── */
+        .view { display: none; }
+        .view.active { display: block; animation: slideUp 0.4s ease; }
+        .hidden { display: none !important; }
 
         /* ── Responsive ─────────────────────────── */
         @media (max-width: 640px) {
             .decision-grid, .framework-grid { grid-template-columns: 1fr; }
             .result-grid { grid-template-columns: 1fr; }
             .email-form { flex-direction: column; }
+            .hero-stats { gap: 1.5rem; }
+            .question-container { padding: 1.5rem; }
         }
-
-        /* ── View States ────────────────────────── */
-        .view { display: none; }
-        .view.active { display: block; }
-
-        .hidden { display: none !important; }
-
-        /* Social share */
-        .share-row {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        .share-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            font-family: inherit;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .share-btn:hover { border-color: var(--teal); color: var(--teal); }
     </style>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="particle-field" id="particle-field"></div>
 
-    <!-- ═══════════════ HERO ═══════════════ -->
-    <header class="hero">
-        <div class="hero-badge">Free Assessment Tool</div>
-        <h1>Should You <span>Take the Leap</span>?</h1>
-        <p>Analyze your next big life decision using professional risk frameworks. Career change, entrepreneurship, education, and more.</p>
-    </header>
+    <!-- Motion Toggle -->
+    <button class="motion-toggle" onclick="toggleMotion()" id="motion-toggle">
+        <span class="motion-dot"></span>
+        <span id="motion-label">Motion On</span>
+    </button>
 
-    <div class="container">
-        <!-- ═══ Step 1: Choose Decision ═══ -->
-        <div id="step-decision" class="view active">
-            <h2 class="step-title">What are you considering?</h2>
-            <p class="step-desc">Select the life decision you want to analyze</p>
+    <div class="page-content">
+        <!-- ═══════════════ HERO ═══════════════ -->
+        <header class="hero">
+            <div class="hero-badge">Free Risk Assessment</div>
+            <h1>What's Your<br><span>Leap Score</span>?</h1>
+            <p class="hero-sub">Should you take the leap?</p>
+            <p>Analyze your next big life decision using the same professional risk frameworks Fortune 500 companies pay millions for.</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="stat-taken">2,847</div>
+                    <div class="hero-stat-label">Assessments Taken</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">3</div>
+                    <div class="hero-stat-label">Frameworks</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">Free</div>
+                    <div class="hero-stat-label">Always</div>
+                </div>
+            </div>
+        </header>
 
-            <div class="decision-grid" id="decision-grid">
-                <div class="decision-card" data-decision="career_change" onclick="selectDecision(this)">
-                    <div class="decision-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+        <div class="container">
+            <!-- ═══ Step 1: Choose Decision ═══ -->
+            <div id="step-decision" class="view active">
+                <h2 class="step-title">What are you considering?</h2>
+                <p class="step-desc">Select the life decision you want to analyze</p>
+                <div class="decision-grid" id="decision-grid">
+                    <div class="decision-card" data-decision="career_change" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
+                        <h3>Career Change</h3>
+                        <p>New role, industry, or company</p>
                     </div>
-                    <h3>Career Change</h3>
-                    <p>New role, industry, or company</p>
+                    <div class="decision-card" data-decision="entrepreneurship" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                        <h3>Entrepreneurship</h3>
+                        <p>Starting a business or side hustle</p>
+                    </div>
+                    <div class="decision-card" data-decision="education" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+                        <h3>Education</h3>
+                        <p>Degree, MBA, certification, bootcamp</p>
+                    </div>
+                    <div class="decision-card" data-decision="relocation" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+                        <h3>Relocation</h3>
+                        <p>Moving to a new city, state, or country</p>
+                    </div>
+                    <div class="decision-card" data-decision="adventure" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>
+                        <h3>Adventure / Sabbatical</h3>
+                        <p>Gap year, travel, pursue a passion</p>
+                    </div>
+                    <div class="decision-card" data-decision="retirement" onclick="selectDecision(this)">
+                        <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+                        <h3>Retirement</h3>
+                        <p>Transitioning out of the workforce</p>
+                    </div>
                 </div>
-                <div class="decision-card" data-decision="entrepreneurship" onclick="selectDecision(this)">
-                    <div class="decision-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-                    </div>
-                    <h3>Entrepreneurship</h3>
-                    <p>Starting a business or side hustle</p>
-                </div>
-                <div class="decision-card" data-decision="education" onclick="selectDecision(this)">
-                    <div class="decision-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-                    </div>
-                    <h3>Education</h3>
-                    <p>Degree, MBA, certification, bootcamp</p>
-                </div>
-                <div class="decision-card" data-decision="relocation" onclick="selectDecision(this)">
-                    <div class="decision-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-                    </div>
-                    <h3>Relocation</h3>
-                    <p>Moving to a new city, state, or country</p>
-                </div>
-                <div class="decision-card" data-decision="adventure" onclick="selectDecision(this)">
-                    <div class="decision-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-                    </div>
-                    <h3>Adventure / Sabbatical</h3>
-                    <p>Gap year, travel, pursue a passion</p>
-                </div>
-                <div class="decision-card" data-decision="retirement" onclick="selectDecision(this)">
-                    <div class="decision-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                    </div>
-                    <h3>Retirement</h3>
-                    <p>Transitioning out of the workforce</p>
+                <div style="text-align:center;margin-top:2rem;">
+                    <button class="btn btn-primary" id="btn-to-framework" disabled onclick="goToFramework()">Choose Your Framework</button>
                 </div>
             </div>
 
-            <div style="text-align:center;margin-top:1.5rem;">
-                <button class="btn btn-primary" id="btn-to-framework" disabled onclick="goToFramework()">Continue</button>
+            <!-- ═══ Step 2: Choose Framework ═══ -->
+            <div id="step-framework" class="view">
+                <h2 class="step-title">Choose Your Analysis Lens</h2>
+                <p class="step-desc">Each framework provides a different perspective — the same tools used by Fortune 500 boards</p>
+                <div class="framework-grid" id="framework-grid">
+                    <div class="framework-card" data-framework="swot" onclick="selectFramework(this)">
+                        <span class="tag">12 Questions</span>
+                        <h3>SWOT Analysis</h3>
+                        <p>Map your Strengths, Weaknesses, Opportunities, and Threats for a strategic overview of your decision.</p>
+                    </div>
+                    <div class="framework-card" data-framework="risk_reward" onclick="selectFramework(this)">
+                        <span class="tag">10 Questions</span>
+                        <h3>Risk-Reward Matrix</h3>
+                        <p>Plot your decision on a risk vs. reward axis to get a clear go/no-go recommendation.</p>
+                    </div>
+                    <div class="framework-card" data-framework="decision_matrix" onclick="selectFramework(this)">
+                        <span class="tag">12 Questions</span>
+                        <h3>Decision Matrix</h3>
+                        <p>Score and weight what matters most — finances, growth, fulfillment, family — and compare paths objectively.</p>
+                    </div>
+                </div>
+                <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:2rem;">
+                    <button class="btn btn-secondary" onclick="goToDecision()">Back</button>
+                    <button class="btn btn-primary" id="btn-to-questions" disabled onclick="goToQuestions()">Start Assessment</button>
+                </div>
+            </div>
+
+            <!-- ═══ Step 3: Questions ═══ -->
+            <div id="step-questions" class="view">
+                <div class="question-container" id="question-container"></div>
+            </div>
+
+            <!-- ═══ Step 4: Results ═══ -->
+            <div id="step-results" class="view">
+                <div class="results-container" id="results-container"></div>
             </div>
         </div>
 
-        <!-- ═══ Step 2: Choose Framework ═══ -->
-        <div id="step-framework" class="view">
-            <h2 class="step-title">Choose Your Analysis Lens</h2>
-            <p class="step-desc">Each framework provides a different perspective on your decision</p>
-
-            <div class="framework-grid" id="framework-grid">
-                <div class="framework-card" data-framework="swot" onclick="selectFramework(this)">
-                    <span class="tag">12 Questions</span>
-                    <h3>SWOT Analysis</h3>
-                    <p>Map your Strengths, Weaknesses, Opportunities, and Threats for a complete strategic view.</p>
-                </div>
-                <div class="framework-card" data-framework="risk_reward" onclick="selectFramework(this)">
-                    <span class="tag">10 Questions</span>
-                    <h3>Risk-Reward Matrix</h3>
-                    <p>Plot your decision on a risk vs. reward axis to get a clear go/no-go recommendation.</p>
-                </div>
-                <div class="framework-card" data-framework="decision_matrix" onclick="selectFramework(this)">
-                    <span class="tag">12 Questions</span>
-                    <h3>Decision Matrix</h3>
-                    <p>Score and weight the factors that matter most — finances, growth, fulfillment, family impact.</p>
-                </div>
-            </div>
-
-            <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1.5rem;">
-                <button class="btn btn-secondary" onclick="goToDecision()">Back</button>
-                <button class="btn btn-primary" id="btn-to-questions" disabled onclick="goToQuestions()">Start Assessment</button>
-            </div>
-        </div>
-
-        <!-- ═══ Step 3: Questions ═══ -->
-        <div id="step-questions" class="view">
-            <div class="question-container" id="question-container"></div>
-        </div>
-
-        <!-- ═══ Step 4: Results ═══ -->
-        <div id="step-results" class="view">
-            <div class="results-container" id="results-container"></div>
-        </div>
+        <!-- ═══════════════ FOOTER ═══════════════ -->
+        <footer class="leap-footer">
+            <a href="index.html">RAB Framework</a> — Enterprise Risk Appetite Governance
+            <p>Leap Score is powered by the RAB Framework</p>
+            <p>Original Concept by Bukola Olajire | Johns Hopkins Carey Business School | Built by F1rst Position</p>
+        </footer>
     </div>
 
-    <!-- ═══════════════ FOOTER ═══════════════ -->
-    <footer class="leap-footer">
-        <a href="index.html">RAB Framework</a> &mdash; Enterprise Risk Appetite Governance
-        <p>Original Concept by Bukola Olajire | Johns Hopkins Carey Business School</p>
-        <p>Built by F1rst Position</p>
-    </footer>
+    <script>
+        // Particle generator
+        function createParticles() {
+            const field = document.getElementById('particle-field');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (10 + Math.random() * 20) + 's';
+                p.style.animationDelay = (Math.random() * 15) + 's';
+                p.style.width = (1 + Math.random() * 2) + 'px';
+                p.style.height = p.style.width;
+                field.appendChild(p);
+            }
+        }
+        createParticles();
 
+        // Motion toggle
+        function toggleMotion() {
+            document.body.classList.toggle('reduce-motion');
+            const isReduced = document.body.classList.contains('reduce-motion');
+            document.getElementById('motion-label').textContent = isReduced ? 'Motion Off' : 'Motion On';
+            localStorage.setItem('leapMotion', isReduced ? 'off' : 'on');
+        }
+        // Restore preference
+        if (localStorage.getItem('leapMotion') === 'off') {
+            document.body.classList.add('reduce-motion');
+            document.getElementById('motion-label').textContent = 'Motion Off';
+        }
+
+        // Counter animation
+        function animateCounter(el, target) {
+            let current = 0;
+            const step = Math.ceil(target / 60);
+            const interval = setInterval(() => {
+                current += step;
+                if (current >= target) { current = target; clearInterval(interval); }
+                el.textContent = current.toLocaleString();
+            }, 25);
+        }
+        // Animate hero stat on load
+        setTimeout(() => animateCounter(document.getElementById('stat-taken'), 2847), 500);
+    </script>
     <script src="js/leap.js"></script>
 </body>
 </html>
