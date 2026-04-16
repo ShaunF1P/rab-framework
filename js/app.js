@@ -477,7 +477,7 @@ async function submitAssessment() {
 async function notifyAssessmentComplete(assessment, profile) {
     if (!CLOUD_SERVER_URL) return; // Skip if no relay server configured
     try {
-        await fetch(`${CLOUD_SERVER_URL}/rab/webhook`, {
+        await fetch(`${CLOUD_SERVER_URL}/webhook`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
