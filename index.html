@@ -6,6 +6,7 @@
     <title>RAB Framework — Enterprise Risk Appetite Governance</title>
     <meta name="description" content="Quantify organizational risk appetite across 5 dimensions. Board member assessment, strategic decision evaluation, and actionable governance insights powered by COSO ERM and ISO 31000.">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/retention.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -123,6 +124,7 @@
                     <button class="nav-btn" data-view="compare" id="nav-compare">Compare</button>
                     <button class="nav-btn" data-view="trends" id="nav-trends">Trends</button>
                     <button class="nav-btn" data-view="simulator" id="nav-simulator">Simulator</button>
+                    <button class="nav-btn" data-view="retention" id="nav-retention">Culture Risk</button>
                     <button class="nav-btn" data-view="about" id="nav-about">About</button>
                 </div>
                 <div class="nav-user">
@@ -493,6 +495,9 @@
                     </div>
                 </div>
             </section>
+
+            <!-- ── Culture Risk / Retention View ───────── -->
+            <section id="view-retention" class="view"></section>
         </main>
 
         <!-- Footer -->
@@ -510,6 +515,7 @@
     <!-- Scripts -->
     <script src="js/supabase-config.js"></script>
     <script src="js/questions.js"></script>
+    <script src="js/retention.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

@@ -182,6 +182,7 @@ function switchView(viewName) {
         target.classList.add('active');
         if (viewName === 'results') loadAllResults();
         if (viewName === 'compare') loadCompareOptions();
+        if (viewName === 'retention') initRetentionView();
     }
     // Hide detail view on nav
     document.getElementById('view-detail').style.display = 'none';

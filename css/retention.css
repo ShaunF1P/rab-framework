@@ -1,0 +1,208 @@
+/* 
+ * Culture Risk & Value Anchor Module Styles
+ */
+
+.retention-container {
+    padding: 1rem 0;
+}
+
+.retention-intro {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.anchor-icon-bg {
+    position: absolute;
+    right: -20px;
+    bottom: -40px;
+    opacity: 0.05;
+    color: var(--teal);
+}
+
+.anchor-icon-bg svg {
+    width: 250px;
+    height: 250px;
+}
+
+/* Sync UI */
+.sync-panel {
+    background: linear-gradient(135deg, rgba(79, 110, 247, 0.1), transparent);
+    border: 1px solid rgba(79, 110, 247, 0.3);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sync-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sync-logo {
+    width: 48px;
+    height: 48px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.sync-status {
+    font-size: 0.8125rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.sync-status.active { color: var(--teal); }
+
+/* Simulator Split Panel */
+.value-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+    .value-split { grid-template-columns: 1fr; }
+}
+
+.value-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.panel-header h3 {
+    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.current-offer h3 { color: var(--teal); }
+.new-offer h3 { color: var(--amber); }
+
+.value-input-group {
+    margin-bottom: 1.25rem;
+}
+
+.value-input-group label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.value-input-group input[type="number"] {
+    width: 100%;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+}
+
+.value-input-group input:focus {
+    outline: none;
+    border-color: var(--teal);
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.slider-container input[type="range"] {
+    flex: 1;
+}
+
+/* Results Dashboard */
+.anchor-results {
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.result-verdict-title {
+    font-size: 0.875rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+}
+
+.net-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    font-family: var(--font-display);
+    line-height: 1;
+    margin-bottom: 1.5rem;
+}
+
+.net-value.positive { color: var(--teal); }
+.net-value.negative { color: var(--red); }
+
+.chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 900px) {
+    .chart-row { grid-template-columns: 1fr; }
+}
+
+.anchor-weight-viz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.consultative-msg {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    border-left: 4px solid var(--teal);
+    text-align: left;
+}
