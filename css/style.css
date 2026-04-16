@@ -36,6 +36,7 @@
   --purple-dim:      rgba(124, 58, 237, 0.08);
   --cyan:            #0891b2;
   --slate:           #64748b;
+  --bg-nav:          rgba(6, 10, 18, 0.9);
 
   /* Text — High Contrast Hierarchy */
   --text-primary:    #f1f5f9;
@@ -96,6 +97,7 @@
   
   --gradient-card:   linear-gradient(165deg, #ffffff, #f8fafc);
   --gradient-glass:  linear-gradient(165deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+  --bg-nav:          rgba(255, 255, 255, 0.9);
 }
 
 /* ── Reset & Base ───────────────────────────────────────────── */
@@ -336,7 +338,7 @@ a:hover { color: var(--accent-glow); }
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(6, 10, 18, 0.9);
+  background: var(--bg-nav);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
   border-bottom: 1px solid var(--border);
