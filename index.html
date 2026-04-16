@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAB Framework — Risk Appetite Balancing for Executive Decision-Making</title>
+    <meta name="description" content="Quantify organizational risk appetite across 5 dimensions. Board member assessment, strategic decision evaluation, and actionable governance insights powered by COSO ERM and ISO 31000.">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ═══════════════ AUTH VIEW ═══════════════ -->
+    <div id="view-auth" class="view">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <h1>RAB Framework</h1>
+                <p>Risk Appetite Balancing for Executive Decision-Making</p>
+            </div>
+            <div class="auth-card">
+                <h2>Welcome</h2>
+                <p class="subtitle">Sign in to access your risk governance dashboard</p>
+                
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Sign In</button>
+                    <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">Create Account</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="you@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Sign In</button>
+                    <p class="auth-error" id="login-error"></p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" style="display:none;" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" placeholder="Jane Smith" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-org">Organization</label>
+                        <input type="text" id="signup-org" placeholder="Acme Health Systems">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" placeholder="you@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Min 6 characters" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Create Account</button>
+                    <p class="auth-error" id="signup-error"></p>
+                </form>
+
+                <p class="auth-footer">
+                    Grounded in COSO ERM & ISO 31000 · Developed at Johns Hopkins Carey Business School
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ APP SHELL ═══════════════ -->
+    <div id="app-shell" style="display:none;">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="navbar-inner">
+                <div class="nav-brand">
+                    <h1>RAB Framework</h1>
+                    <span class="tagline">Risk Appetite Balancing</span>
+                </div>
+                <div class="nav-links">
+                    <button class="nav-btn active" data-view="home" id="nav-home">Dashboard</button>
+                    <button class="nav-btn" data-view="assessment" id="nav-assessment">New Assessment</button>
+                    <button class="nav-btn" data-view="results" id="nav-results">Results</button>
+                    <button class="nav-btn" data-view="compare" id="nav-compare">Compare</button>
+                    <button class="nav-btn" data-view="about" id="nav-about">About</button>
+                </div>
+                <div class="nav-user">
+                    <span class="nav-user-name" id="nav-user-name"></span>
+                    <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- ── Home View ──────────────────────────── -->
+            <section id="view-home" class="view active">
+                <div class="hero">
+                    <div class="hero-badge">
+                        <span>⚡</span>
+                        <span>Enterprise Risk Governance</span>
+                    </div>
+                    <h2>Strategic Risk Governance <br><span class="gradient-text">Made Actionable</span></h2>
+                    <p class="subtitle">Quantify your organization's risk appetite across five critical dimensions. Assess board members, evaluate strategic decisions, and receive actionable governance insights.</p>
+
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon strategic">📊</div>
+                            <h3>Multi-Dimensional Assessment</h3>
+                            <p>Evaluate risk appetite across Strategic, Operational, Financial, Compliance, and Resilience dimensions with 20 scenario-based questions.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon operational">👥</div>
+                            <h3>Board Member Evaluation</h3>
+                            <p>Assess risk profiles of current or prospective board members to ensure optimal governance composition and diversity.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon financial">⚖️</div>
+                            <h3>Decision Framework</h3>
+                            <p>Evaluate strategic decisions against organizational risk tolerance and capacity thresholds with quantified outputs.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon insights">💡</div>
+                            <h3>Actionable Insights</h3>
+                            <p>Receive prioritized recommendations grounded in COSO ERM, ISO 31000, and real-world case studies.</p>
+                        </div>
+                    </div>
+
+                    <div class="cta-section">
+                        <button class="btn-primary" onclick="startAssessment()">
+                            <span>✦</span> Start New Assessment
+                        </button>
+                        <button class="btn-secondary" onclick="viewResults()">
+                            View Past Results →
+                        </button>
+                    </div>
+
+                    <div class="methodology-section">
+                        <h3>Grounded in Operations Management Theory</h3>
+                        <ul class="methodology-list">
+                            <li><strong>Efficient Frontier:</strong> Balancing risk and reward tradeoffs to optimize organizational performance</li>
+                            <li><strong>COSO ERM Framework:</strong> Aligning risk appetite with strategy and objectives</li>
+                            <li><strong>ISO 31000:</strong> Distinguishing appetite, tolerance, and capacity for comprehensive risk governance</li>
+                            <li><strong>Queueing Theory:</strong> Managing capacity-service level tradeoffs under uncertainty</li>
+                            <li><strong>Newsvendor Model:</strong> Balancing overage and underage costs in risk decisions</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Assessment View ────────────────────── -->
+            <section id="view-assessment" class="view">
+                <div class="assessment-container">
+                    <div class="assessment-header">
+                        <h2>Risk Appetite Assessment</h2>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <p class="progress-text" id="progress-text">Step 1 of 7</p>
+                    </div>
+
+                    <!-- Step 1: Assessment Type -->
+                    <div class="assessment-step active" id="step-1">
+                        <h3>Assessment Type</h3>
+                        <p>What would you like to assess?</p>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="assessment_type" value="board_member">
+                                <div class="radio-content">
+                                    <h4>👤 Board Member Assessment</h4>
+                                    <p>Evaluate the risk profile of a current or prospective board member</p>
+                                </div>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="assessment_type" value="decision">
+                                <div class="radio-content">
+                                    <h4>⚖️ Strategic Decision</h4>
+                                    <p>Assess a specific strategic decision or initiative against organizational risk appetite</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Basic Information -->
+                    <div class="assessment-step" id="step-2">
+                        <h3>Basic Information</h3>
+                        <div class="form-group">
+                            <label for="subject_name">Name / Description</label>
+                            <input type="text" id="subject_name" placeholder="Enter name or decision description" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="notes">Context / Notes (Optional)</label>
+                            <textarea id="notes" rows="3" placeholder="Additional context or background information"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Dimension Weighting -->
+                    <div class="assessment-step" id="step-3">
+                        <h3>Dimension Weighting</h3>
+                        <p>Adjust the importance of each risk dimension. Weights must total 100%.</p>
+                        <div class="weight-sliders">
+                            <div class="weight-item">
+                                <label>Strategic Risk <span class="weight-value" id="weight-strategic-value">20%</span></label>
+                                <input type="range" id="weight-strategic" min="0" max="100" value="20" class="weight-slider">
+                                <p class="dimension-desc">Market expansion, innovation, competitive positioning</p>
+                            </div>
+                            <div class="weight-item">
+                                <label>Operational Risk <span class="weight-value" id="weight-operational-value">20%</span></label>
+                                <input type="range" id="weight-operational" min="0" max="100" value="20" class="weight-slider">
+                                <p class="dimension-desc">Process efficiency, capacity, quality, supply chain</p>
+                            </div>
+                            <div class="weight-item">
+                                <label>Financial Risk <span class="weight-value" id="weight-financial-value">20%</span></label>
+                                <input type="range" id="weight-financial" min="0" max="100" value="20" class="weight-slider">
+                                <p class="dimension-desc">Leverage, liquidity, investment returns, cash flow</p>
+                            </div>
+                            <div class="weight-item">
+                                <label>Compliance / Reputational Risk <span class="weight-value" id="weight-compliance-value">20%</span></label>
+                                <input type="range" id="weight-compliance" min="0" max="100" value="20" class="weight-slider">
+                                <p class="dimension-desc">Regulatory adherence, ethical standards, brand integrity</p>
+                            </div>
+                            <div class="weight-item">
+                                <label>Resilience Risk <span class="weight-value" id="weight-resilience-value">20%</span></label>
+                                <input type="range" id="weight-resilience" min="0" max="100" value="20" class="weight-slider">
+                                <p class="dimension-desc">Adaptability, redundancy, crisis management, workforce stability</p>
+                            </div>
+                        </div>
+                        <div class="weight-total" id="weight-total-container">
+                            <strong>Total: <span id="weight-total">100%</span></strong>
+                            <p class="weight-warning" id="weight-warning" style="display: none;">Weights must total 100%</p>
+                        </div>
+                        <div class="preset-buttons">
+                            <button class="btn-small active" onclick="setPresetWeights('balanced')">Balanced</button>
+                            <button class="btn-small" onclick="setPresetWeights('strategic')">Strategic Focus</button>
+                            <button class="btn-small" onclick="setPresetWeights('operational')">Operational Focus</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Strategic Questions -->
+                    <div class="assessment-step" id="step-4">
+                        <h3>Strategic Risk Questions</h3>
+                        <p>How does the organization approach strategic opportunities and threats?</p>
+                        <div id="strategic-questions"></div>
+                    </div>
+
+                    <!-- Step 5: Operational & Financial -->
+                    <div class="assessment-step" id="step-5">
+                        <h3>Operational & Financial Risk Questions</h3>
+                        <p>Evaluate preferences for capacity, operations, and financial strategy.</p>
+                        <div id="operational-financial-questions"></div>
+                    </div>
+
+                    <!-- Step 6: Compliance -->
+                    <div class="assessment-step" id="step-6">
+                        <h3>Compliance & Reputational Risk Questions</h3>
+                        <p>How does the organization navigate regulatory and ethical boundaries?</p>
+                        <div id="compliance-questions"></div>
+                    </div>
+
+                    <!-- Step 7: Resilience -->
+                    <div class="assessment-step" id="step-7">
+                        <h3>Resilience & Capacity Questions</h3>
+                        <p>How prepared is the organization for disruption and uncertainty?</p>
+                        <div id="resilience-questions"></div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="assessment-nav">
+                        <button class="btn-secondary" id="btn-prev" onclick="prevStep()" disabled>← Previous</button>
+                        <button class="btn-primary" id="btn-next" onclick="nextStep()">Next →</button>
+                        <button class="btn-primary" id="btn-submit" onclick="submitAssessment()" style="display: none;">✦ Complete Assessment</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Results View ───────────────────────── -->
+            <section id="view-results" class="view">
+                <div class="results-header">
+                    <h2>Assessment Results</h2>
+                    <button class="btn-secondary" onclick="loadAllResults()">⟳ Refresh</button>
+                </div>
+                <div id="results-list" class="results-grid"></div>
+            </section>
+
+            <!-- ── Compare View ───────────────────────── -->
+            <section id="view-compare" class="view">
+                <h2 style="margin-bottom:1.5rem;">Compare Assessments</h2>
+                <div class="compare-container">
+                    <div class="compare-select">
+                        <div class="form-group">
+                            <label>Select Assessments to Compare (2–4)</label>
+                            <div id="compare-checkboxes"></div>
+                        </div>
+                        <button class="btn-primary" onclick="generateComparison()">Generate Comparison</button>
+                    </div>
+                    <div id="comparison-output"></div>
+                </div>
+            </section>
+
+            <!-- ── About View ─────────────────────────── -->
+            <section id="view-about" class="view">
+                <div class="about-content">
+                    <h2>About the RAB Framework</h2>
+
+                    <div class="about-section">
+                        <h3>Theoretical Foundation</h3>
+                        <p>The Risk Appetite Balancing (RAB) Framework operationalizes concepts from operations management and enterprise risk management into a practical decision-support tool for boards and executives.</p>
+                        <h4>Key Concepts Integrated:</h4>
+                        <ul>
+                            <li><strong>Efficient Frontier (Markowitz):</strong> Organizations strive to position themselves on the efficient frontier, balancing competing performance measures. The RAB framework helps identify this optimal balance in risk-taking.</li>
+                            <li><strong>COSO ERM Framework:</strong> Aligns with COSO's definition of risk appetite as "the types and amount of risk an organization is willing to accept in pursuit of value."</li>
+                            <li><strong>ISO 31000:</strong> Distinguishes between Risk Appetite (willing to pursue), Risk Tolerance (acceptable deviation), and Risk Capacity (maximum bearable).</li>
+                            <li><strong>Queueing Theory:</strong> Balancing waiting cost against capacity cost — a fundamental risk tradeoff in operational decisions.</li>
+                            <li><strong>Newsvendor Model:</strong> Balancing underage cost (missed opportunity) against overage cost (excessive commitment) to inform the recommendation engine.</li>
+                        </ul>
+                    </div>
+
+                    <div class="about-section">
+                        <h3>Assessment Methodology</h3>
+                        <p>The framework uses <strong>20 scenario-based questions</strong> distributed across five dimensions (4 questions per dimension). Each question presents a realistic scenario with a 5-point Likert scale from conservative to aggressive.</p>
+                        <h4>Scoring:</h4>
+                        <ul>
+                            <li><strong>Dimension Score</strong> = ((Average Response – 1) / 4) × 100</li>
+                            <li><strong>Overall RAB Score</strong> = Σ (Dimension Score × Dimension Weight)</li>
+                            <li><strong>Conservative</strong> (0–39) · <strong>Moderate</strong> (40–69) · <strong>Aggressive</strong> (70–100)</li>
+                        </ul>
+                    </div>
+
+                    <div class="about-section">
+                        <h3>Course Connection</h3>
+                        <p><strong>Original Concept:</strong> The RAB Framework was conceived by <strong>Bukola Olajire</strong> during the Operations Management course at Johns Hopkins Carey Business School (Spring 2026), taught by <strong>Graeme Warren</strong>.</p>
+                        <ul>
+                            <li><strong>Littlefield Simulation:</strong> Capacity-inventory-contract tradeoffs under cash constraints → Financial Risk</li>
+                            <li><strong>Neighbors Coffee Shop:</strong> Artisanal quality vs. operational efficiency → Strategic Risk</li>
+                            <li><strong>Hip Op Hospital:</strong> Throughput vs. burnout/quality balancing → Operational Resilience</li>
+                        </ul>
+                    </div>
+
+                    <div class="about-section citation">
+                        <h3>References</h3>
+                        <ul class="references">
+                            <li>Cachon, G., & Terwiesch, C. (2024). <em>Operations Management</em> (3rd ed.). McGraw Hill.</li>
+                            <li>COSO. (2020). <em>Risk Appetite – Critical to Success</em>. Committee of Sponsoring Organizations.</li>
+                            <li>ISO. (2018). <em>ISO 31000:2018 Risk Management – Guidelines</em>.</li>
+                            <li>NACD. (2017). <em>Board Oversight of Management's Risk Appetite and Tolerance</em>.</li>
+                            <li>Institute of Risk Management. (2019). <em>Review of the COSO ERM Frameworks</em>.</li>
+                        </ul>
+                        <p style="margin-top:1.5rem;font-size:0.875rem;color:var(--text-dim);">
+                            Original concept by <strong>Bukola Olajire</strong> · Technical implementation by <strong>F1rst Position</strong> · 
+                            Powered by Supabase
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Detail View ────────────────────────── -->
+            <section id="view-detail" class="view" style="display: none;">
+                <div class="detail-container">
+                    <button class="btn-secondary back-btn" onclick="backToResults()">← Back to Results</button>
+                    <div id="detail-content"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>
+                &copy; 2026 RAB Framework — Risk Appetite Balancing<br>
+                Original Concept by Bukola Olajire · Johns Hopkins Carey Business School<br>
+                Built by F1rst Position
+            </p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/questions.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
