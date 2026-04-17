@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAB Framework — Co-Founder Briefing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #060a12;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --bg-glass: rgba(30, 41, 59, 0.4);
+            --border: rgba(148, 163, 184, 0.08);
+            --border-accent: rgba(59, 130, 246, 0.2);
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-dim: #64748b;
+            --accent: #3b82f6;
+            --accent-glow: #60a5fa;
+            --gold: #c9a84c;
+            --gold-glow: #e2c56d;
+            --teal: #14b8a6;
+            --green: #22c55e;
+            --red: #ef4444;
+            --amber: #f59e0b;
+            --purple: #8b5cf6;
+            --coral: #f97316;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(59,130,246,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.02) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ── Hero ──────────────────────────────────── */
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: pulseGlow 6s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.375rem 1rem;
+            background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+            border: 1px solid rgba(201,168,76,0.3);
+            border-radius: 100px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--gold), var(--gold-glow), var(--amber));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 580px;
+            margin: 0 auto 1rem;
+        }
+
+        .hero .meta {
+            font-size: 0.8125rem;
+            color: var(--text-dim);
+        }
+
+        .hero .meta strong { color: var(--text-secondary); }
+
+        /* ── Container ─────────────────────────────── */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        /* ── Section Headers ───────────────────────── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 4rem 0 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-num {
+            width: 40px; height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* ── Cards ─────────────────────────────────── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            margin-bottom: 1.25rem;
+            backdrop-filter: blur(20px);
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+
+        .card h3 .icon {
+            font-size: 1.25rem;
+        }
+
+        .card p, .card li {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.8;
+        }
+
+        .card ul { list-style: none; padding: 0; }
+        .card li { padding: 0.25rem 0; }
+        .card li::before { content: '→'; color: var(--accent); margin-right: 0.5rem; font-weight: 600; }
+
+        /* ── Stats Grid ────────────────────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .stat-card:hover { border-color: var(--border-accent); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value.teal { color: var(--teal); }
+        .stat-value.gold { color: var(--gold); }
+        .stat-value.accent { color: var(--accent); }
+        .stat-value.green { color: var(--green); }
+        .stat-value.purple { color: var(--purple); }
+        .stat-value.coral { color: var(--coral); }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
+
+        /* ── Tables ────────────────────────────────── */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        thead { background: rgba(30, 41, 59, 0.6); }
+
+        th {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(59, 130, 246, 0.03); }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.625rem;
+            border-radius: 100px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-live { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+        .badge-planned { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+        .badge-pro { background: rgba(59,130,246,0.12); color: var(--accent); border: 1px solid rgba(59,130,246,0.2); }
+        .badge-whimsy { background: rgba(249,115,22,0.12); color: var(--coral); border: 1px solid rgba(249,115,22,0.2); }
+
+        /* ── Architecture Diagram ──────────────────── */
+        .arch-diagram {
+            background: linear-gradient(165deg, rgba(15,23,42,0.8), rgba(6,10,18,0.9));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Inter', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arch-diagram::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--purple), var(--teal), var(--gold));
+        }
+
+        .arch-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .arch-box {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            min-width: 180px;
+        }
+
+        .arch-box.consumer {
+            background: rgba(20, 184, 166, 0.1);
+            border: 1px solid rgba(20, 184, 166, 0.25);
+            color: var(--teal);
+        }
+
+        .arch-box.enterprise {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            color: var(--accent-glow);
+        }
+
+        .arch-box.backend {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            color: var(--purple);
+        }
+
+        .arch-box.parent {
+            background: rgba(201, 168, 76, 0.1);
+            border: 1px solid rgba(201, 168, 76, 0.25);
+            color: var(--gold);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .arch-box small {
+            display: block;
+            font-size: 0.6875rem;
+            font-weight: 400;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+        }
+
+        .arch-connector {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 1.25rem;
+            margin: 0.5rem 0;
+            letter-spacing: 0.2em;
+        }
+
+        /* ── Flow Diagram ──────────────────────────── */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .flow-step {
+            padding: 0.625rem 1rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .flow-arrow {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        /* ── Alert Boxes ───────────────────────────── */
+        .alert {
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            margin: 1.25rem 0;
+            font-size: 0.875rem;
+            line-height: 1.7;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            color: var(--accent-glow);
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.15);
+            color: var(--green);
+        }
+
+        .alert-warn {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            color: var(--amber);
+        }
+
+        .alert-title {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            font-size: 0.9375rem;
+        }
+
+        /* ── Phases ─────────────────────────────────── */
+        .phase-timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .phase-timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--purple), var(--teal));
+            border-radius: 2px;
+        }
+
+        .phase-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 1.5rem;
+        }
+
+        .phase-item::before {
+            content: '';
+            position: absolute;
+            left: -1.625rem;
+            top: 0.6rem;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            background: var(--bg);
+        }
+
+        .phase-item:nth-child(2)::before { border-color: var(--purple); }
+        .phase-item:nth-child(3)::before { border-color: var(--teal); }
+
+        .phase-item h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .phase-item .phase-label {
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .phase-item:nth-child(2) .phase-label { color: var(--purple); }
+        .phase-item:nth-child(3) .phase-label { color: var(--teal); }
+
+        /* ── Tech Stack ────────────────────────────── */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .tech-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            flex-shrink: 0;
+        }
+
+        .tech-item .tech-name { font-weight: 600; font-size: 0.875rem; }
+        .tech-item .tech-desc { font-size: 0.75rem; color: var(--text-dim); }
+
+        /* ── Footer ────────────────────────────────── */
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+        }
+
+        .footer p { color: var(--text-dim); font-size: 0.8125rem; }
+        .footer .origin { color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 500; }
+
+        /* ── Responsive ────────────────────────────── */
+        @media (max-width: 768px) {
+            .container { padding: 0 1.25rem 3rem; }
+            .hero { min-height: 50vh; padding: 3rem 1.25rem; }
+            .arch-row { flex-direction: column; align-items: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* ── Print ─────────────────────────────────── */
+        @media print {
+            body { background: white; color: #1a1a1a; }
+            .card { border: 1px solid #ddd; background: #fafafa; }
+            .hero::before { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══ HERO ═══ -->
+    <section class="hero">
+        <div>
+            <div class="hero-badge">Confidential — Co-Founder Briefing</div>
+            <h1>RAB Framework<br><span class="gradient">Platform Status Report</span></h1>
+            <p class="subtitle">A comprehensive audit of what has been built, what changed this sprint, and the strategic direction ahead.</p>
+            <p class="meta">Prepared for <strong>Bukola Olajire</strong> · April 16, 2026<br>Prepared by <strong>Shaun Muhammad</strong> · Lead Architect, F1rst Position</p>
+        </div>
+    </section>
+
+    <div class="container">
+
+        <!-- ═══ SECTION 1: PLATFORM OVERVIEW ═══ -->
+        <div class="section-header">
+            <div class="section-num">01</div>
+            <h2>Platform Overview</h2>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value teal">8</div>
+                <div class="stat-label">Decision Types</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value gold">3</div>
+                <div class="stat-label">Analysis Frameworks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value accent">2</div>
+                <div class="stat-label">Platform Sides (B2C + B2B)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">5</div>
+                <div class="stat-label">Integrations Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value purple">7</div>
+                <div class="stat-label">Bot Commands</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value coral">100%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </div>
+
+        <div class="arch-diagram">
+            <div class="arch-row">
+                <div class="arch-box parent">F1RST POSITION<small>Parent Brand & CRM Ecosystem</small></div>
+            </div>
+            <div class="arch-connector">▼</div>
+            <div class="arch-row">
+                <div class="arch-box consumer">LEAP SCORE (B2C)<small>leap.html · No login · Viral engine</small></div>
+                <div class="arch-box enterprise">RAB DASHBOARD (B2B)<small>index.html · Auth-gated · Governance</small></div>
+            </div>
+            <div class="arch-connector">▼ ▼</div>
+            <div class="arch-row">
+                <div class="arch-box backend">Supabase DB<small>PostgreSQL + Auth + RLS</small></div>
+                <div class="arch-box backend">Cloud Run Relay<small>Node.js API · us-east1</small></div>
+                <div class="arch-box backend">GHL CRM<small>Auto-contact + Tagging</small></div>
+                <div class="arch-box backend">Telegram Bot<small>Two-way command center</small></div>
+            </div>
+        </div>
+
+        <!-- ═══ SECTION 2: LIVE ASSETS ═══ -->
+        <div class="section-header">
+            <div class="section-num">02</div>
+            <h2>Live Assets</h2>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>URL / Identifier</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Leap Score</strong> (Consumer)</td>
+                        <td>shaunf1p.github.io/rab-framework/leap.html</td>
+                        <td><span class="badge badge-live">✅ LIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enterprise Dashboard</strong></td>
+                        <td>shaunf1p.github.io/rab-framework/</td>
+                        <td><span class="badge badge-live">✅ LIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Relay Server</strong> (API)</td>
+                        <td>rab-relay-454433309736.us-east1.run.app</td>
+                        <td><span class="badge badge-live">✅ LIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Supabase</strong></td>
+                        <td>Project: RAB Framework (epxjcrlqgqvgglpohujv)</td>
+                        <td><span class="badge badge-live">✅ ACTIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>GHL Workflow</strong></td>
+                        <td>Leap Score Routing Pipeline</td>
+                        <td><span class="badge badge-live">✅ PUBLISHED</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Telegram Bot</strong></td>
+                        <td>@RABFrameworkAlerts_bot</td>
+                        <td><span class="badge badge-live">✅ ACTIVE</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ═══ SECTION 3: SPRINT DELIVERABLES ═══ -->
+        <div class="section-header">
+            <div class="section-num">03</div>
+            <h2>Sprint Deliverables</h2>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🌍</span> Leap Score Expansion — 8 Life Events</h3>
+            <p>Leap Score now covers both career and deeply personal life decisions, with a tone engine that adapts automatically.</p>
+            <div class="table-wrap" style="margin-top: 1rem;">
+                <table>
+                    <thead><tr><th>Decision</th><th>Category</th><th>Tone</th></tr></thead>
+                    <tbody>
+                        <tr><td>Starting a Business</td><td><span class="badge badge-pro">Career</span></td><td>Consultative</td></tr>
+                        <tr><td>Switching Careers</td><td><span class="badge badge-pro">Career</span></td><td>Consultative</td></tr>
+                        <tr><td>Going Back to School</td><td><span class="badge badge-pro">Career</span></td><td>Consultative</td></tr>
+                        <tr><td>Freelancing</td><td><span class="badge badge-pro">Career</span></td><td>Consultative</td></tr>
+                        <tr><td>Growing the Family</td><td><span class="badge badge-whimsy">Personal</span></td><td>Celebratory</td></tr>
+                        <tr><td>The Big Trip</td><td><span class="badge badge-whimsy">Personal</span></td><td>Celebratory</td></tr>
+                        <tr><td>Buying a House</td><td><span class="badge badge-whimsy">Personal</span></td><td>Celebratory</td></tr>
+                        <tr><td>Getting Married</td><td><span class="badge badge-whimsy">Personal</span></td><td>Celebratory</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏆</span> Victory Lap & Brag Receipt</h3>
+            <p>A viral sharing engine that transforms assessment results into downloadable, social-media-ready infographics.</p>
+            <div class="flow">
+                <span class="flow-step">Select Wins</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Generate Receipt</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Download PNG</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Share on Socials</span>
+            </div>
+            <div class="alert alert-info">
+                <div class="alert-title">💡 Why This Matters</div>
+                Every shared brag receipt is a free advertisement. The equation format (Win + Win = Decision) is designed to be inherently shareable and encourage engagement.
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🔗</span> GoHighLevel Lead Pipeline</h3>
+            <p>Every email capture triggers a three-pronged data flow:</p>
+            <div class="flow">
+                <span class="flow-step">📧 Email Entered</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Supabase DB</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Cloud Run Relay</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">GHL Contact + Tags</span>
+            </div>
+            <ul>
+                <li>Universal tag: <code style="color:var(--teal);">leap-score</code></li>
+                <li>Decision-specific tags: <code style="color:var(--teal);">leap-vacation</code>, <code style="color:var(--teal);">leap-house</code>, <code style="color:var(--teal);">leap-marriage</code>, etc.</li>
+                <li>Enables segmented nurture campaigns and partner data licensing</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📱</span> Telegram Bot — Mobile Command Center</h3>
+            <p>Query the entire RAB ecosystem from your phone without opening a dashboard.</p>
+            <div class="table-wrap" style="margin-top: 1rem;">
+                <table>
+                    <thead><tr><th>Command</th><th>Function</th></tr></thead>
+                    <tbody>
+                        <tr><td><code style="color:var(--teal);">/help</code></td><td>Full command menu</td></tr>
+                        <tr><td><code style="color:var(--teal);">/leads</code></td><td>Last 10 email captures</td></tr>
+                        <tr><td><code style="color:var(--teal);">/stats</code></td><td>Pipeline metrics & conversion rates</td></tr>
+                        <tr><td><code style="color:var(--teal);">/assessments</code></td><td>Last 5 assessments with scores</td></tr>
+                        <tr><td><code style="color:var(--teal);">/score &lt;email&gt;</code></td><td>Look up a specific person's Leap Score</td></tr>
+                        <tr><td><code style="color:var(--teal);">/health</code></td><td>Full system health check</td></tr>
+                        <tr><td><code style="color:var(--teal);">/ghl</code></td><td>GHL pipeline connection status</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ═══ SECTION 4: INFRASTRUCTURE AUDIT ═══ -->
+        <div class="section-header">
+            <div class="section-num">04</div>
+            <h2>Infrastructure Audit</h2>
+        </div>
+
+        <div class="alert alert-success">
+            <div class="alert-title">✅ Separation Complete</div>
+            RAB Framework and Everfast Field OS are now fully separated. No shared Telegram bots, no shared credentials, no shared notification channels.
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Before (❌ Shared)</th>
+                        <th>After (✅ Separated)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Telegram Bot</td><td style="color:var(--red);">Shared with Everfast</td><td style="color:var(--green);">@RABFrameworkAlerts_bot</td></tr>
+                    <tr><td>Telegram Group</td><td style="color:var(--red);">"Everfast Admin"</td><td style="color:var(--green);">"RAB Framework Admin"</td></tr>
+                    <tr><td>Bot Token</td><td style="color:var(--red);">Everfast token</td><td style="color:var(--green);">RAB-specific token</td></tr>
+                    <tr><td>Chat ID</td><td style="color:var(--red);">-1003802366145</td><td style="color:var(--green);">-5224406197</td></tr>
+                    <tr><td>Code Fallback</td><td style="color:var(--red);">Everfast group ID</td><td style="color:var(--green);">RAB group ID</td></tr>
+                    <tr><td>Cloud Run Env</td><td style="color:var(--red);">Mixed credentials</td><td style="color:var(--green);">RAB-only credentials</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ═══ SECTION 5: PROPOSED DIRECTION ═══ -->
+        <div class="section-header">
+            <div class="section-num">05</div>
+            <h2>Proposed Direction</h2>
+        </div>
+
+        <div class="phase-timeline">
+            <div class="phase-item">
+                <div class="phase-label">Phase 1 — Next Sprint</div>
+                <h4>Foundation Enhancement</h4>
+                <div class="card" style="margin-top: 0.5rem;">
+                    <ul>
+                        <li><strong>Gemini AI Integration</strong> — AI-powered executive risk briefings</li>
+                        <li><strong>Leap Score PDF Report</strong> — Generate & email actual reports</li>
+                        <li><strong>GHL Nurture Sequences</strong> — Decision-specific drip campaigns</li>
+                        <li><strong>Daily Telegram Digest</strong> — Automated morning/evening summaries</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="phase-item">
+                <div class="phase-label">Phase 2 — 30 Days</div>
+                <h4>Product Expansion</h4>
+                <div class="card" style="margin-top: 0.5rem;">
+                    <ul>
+                        <li><strong>Foresight Rebrand</strong> — "If F1rst Position is where you want to be, Foresight is how you see risks before anyone else"</li>
+                        <li><strong>Employee Simulator</strong> — "Should I Stay?" tool revealing hidden compensation value</li>
+                        <li><strong>Culture Risk Value Anchors</strong> — Industry, geographic & seasonal retention data</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="phase-item">
+                <div class="phase-label">Phase 3 — 60-90 Days</div>
+                <h4>Enterprise Scale</h4>
+                <div class="card" style="margin-top: 0.5rem;">
+                    <ul>
+                        <li><strong>ERP/WFM/HRIS Integration</strong> — Demo connectors for enterprise systems</li>
+                        <li><strong>Partner Data Portal</strong> — Anonymized aggregate behavioral data for B2B licensing</li>
+                        <li><strong>Analytics Dashboard</strong> — Victory Lap usage & social sharing metrics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SECTION 6: REVENUE MODEL ═══ -->
+        <div class="section-header">
+            <div class="section-num">06</div>
+            <h2>Revenue Model</h2>
+        </div>
+
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+            <div class="stat-card">
+                <div class="stat-value" style="font-size:1.5rem; color: var(--teal);">Free</div>
+                <div class="stat-label">Consumer Leap Score</div>
+                <p style="font-size:0.75rem; color:var(--text-dim); margin-top:0.5rem;">Top-of-funnel lead gen</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="font-size:1.5rem; color: var(--accent);">SaaS</div>
+                <div class="stat-label">Enterprise Dashboard</div>
+                <p style="font-size:0.75rem; color:var(--text-dim); margin-top:0.5rem;">Risk governance subscription</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="font-size:1.5rem; color: var(--purple);">Add-on</div>
+                <div class="stat-label">Employee Simulator</div>
+                <p style="font-size:0.75rem; color:var(--text-dim); margin-top:0.5rem;">Attrition prevention tool</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="font-size:1.5rem; color: var(--gold);">Licensed</div>
+                <div class="stat-label">Partner Data</div>
+                <p style="font-size:0.75rem; color:var(--text-dim); margin-top:0.5rem;">Aggregate behavioral insights</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="font-size:1.5rem; color: var(--coral);">Affiliate</div>
+                <div class="stat-label">Nurture Conversions</div>
+                <p style="font-size:0.75rem; color:var(--text-dim); margin-top:0.5rem;">Partner revenue on conversion</p>
+            </div>
+        </div>
+
+        <!-- ═══ SECTION 7: TECH STACK ═══ -->
+        <div class="section-header">
+            <div class="section-num">07</div>
+            <h2>Technical Stack</h2>
+        </div>
+
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);">🌐</div>
+                <div>
+                    <div class="tech-name">Frontend</div>
+                    <div class="tech-desc">HTML/CSS/JS · Chart.js · html2canvas</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(20,184,166,0.1); color:var(--teal);">📦</div>
+                <div>
+                    <div class="tech-name">Hosting</div>
+                    <div class="tech-desc">GitHub Pages (Frontend)</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(139,92,246,0.1); color:var(--purple);">🗄️</div>
+                <div>
+                    <div class="tech-name">Database</div>
+                    <div class="tech-desc">Supabase (PostgreSQL + Auth + RLS)</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(249,115,22,0.1); color:var(--coral);">⚡</div>
+                <div>
+                    <div class="tech-name">API / Relay</div>
+                    <div class="tech-desc">Node.js + Express · Google Cloud Run</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(201,168,76,0.1); color:var(--gold);">💼</div>
+                <div>
+                    <div class="tech-name">CRM</div>
+                    <div class="tech-desc">GoHighLevel (F1rst Position)</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(34,197,94,0.1); color:var(--green);">📱</div>
+                <div>
+                    <div class="tech-name">Notifications</div>
+                    <div class="tech-desc">Telegram Bot API (webhook)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ FOOTER ═══ -->
+        <div class="footer">
+            <p class="origin">Original Concept by <strong>Bukola Olajire</strong> · Johns Hopkins Carey Business School</p>
+            <p>Built by F1rst Position · Grounded in COSO ERM, ISO 31000, and Behavioral Economics</p>
+            <p style="margin-top:1rem; color: var(--text-dim); font-size: 0.75rem;">Confidential — April 16, 2026</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
