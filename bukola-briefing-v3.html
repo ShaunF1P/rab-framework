@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAB Framework — Co-Founder Briefing · April 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #050911;
+            --bg-card: rgba(13, 21, 38, 0.7);
+            --bg-glass: rgba(20, 32, 56, 0.45);
+            --border: rgba(148, 163, 184, 0.07);
+            --border-accent: rgba(59, 130, 246, 0.22);
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-dim: #4b5e7a;
+            --accent: #3b82f6;
+            --accent-glow: #60a5fa;
+            --gold: #c9a84c;
+            --gold-glow: #e2c56d;
+            --teal: #14b8a6;
+            --green: #22c55e;
+            --red: #ef4444;
+            --amber: #f59e0b;
+            --purple: #8b5cf6;
+            --coral: #f97316;
+            --rose: #f43f5e;
+            --violet: #7c3aed;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Background Orbs ─────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 800px 600px at 15% 20%, rgba(59,130,246,0.05) 0%, transparent 55%),
+                radial-gradient(ellipse 600px 500px at 85% 75%, rgba(201,168,76,0.04) 0%, transparent 55%),
+                radial-gradient(ellipse 500px 400px at 60% 40%, rgba(139,92,246,0.03) 0%, transparent 55%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ── Nav ─────────────────────── */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(5, 9, 17, 0.85);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+            gap: 1rem;
+        }
+
+        .nav-logo {
+            font-weight: 800;
+            font-size: 0.9375rem;
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, var(--gold), var(--gold-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.25rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); background: var(--bg-glass); }
+
+        .nav-cta {
+            padding: 0.375rem 1rem;
+            background: linear-gradient(135deg, var(--accent), var(--violet));
+            color: #fff !important;
+            border-radius: 8px;
+            font-weight: 600 !important;
+            font-size: 0.8125rem !important;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+
+        .nav-cta:hover { opacity: 0.85 !important; background: none !important; }
+
+        /* ── Hero ────────────────────── */
+        .hero {
+            min-height: 75vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(59,130,246,0.07) 0%, transparent 65%);
+            transform: translate(-50%, -50%);
+            animation: pulseGlow 7s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        .hero-content { position: relative; z-index: 1; }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 1rem;
+            background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.04));
+            border: 1px solid rgba(201,168,76,0.28);
+            border-radius: 100px;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 2.25rem;
+        }
+
+        .hero-eyebrow .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .hero h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2.75rem, 6vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .grad {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 50%, var(--amber) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-sub {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-meta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-size: 0.8125rem;
+            color: var(--text-dim);
+        }
+
+        .hero-meta span { color: var(--text-secondary); font-weight: 500; }
+
+        .hero-meta .divider { width: 1px; height: 16px; background: var(--border); }
+
+        .hero-ctas {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            text-decoration: none;
+            transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn:hover { transform: translateY(-1px); opacity: 0.9; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--violet));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-teal {
+            background: linear-gradient(135deg, var(--teal), #0d9488);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(20,184,166,0.3);
+        }
+
+        /* ── Container ───────────────── */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem 5rem;
+        }
+
+        /* ── Section Header ──────────── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 5rem 0 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-num {
+            width: 42px; height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.875rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* ── Stats Grid ──────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .stat-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+
+        .stat-value {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.375rem;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.6875rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            font-weight: 600;
+        }
+
+        /* ── Cards ───────────────────── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            margin-bottom: 1.25rem;
+            backdrop-filter: blur(20px);
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+
+        .card h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+
+        .card p { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.8; }
+        .card ul { list-style: none; padding: 0; margin-top: 1rem; }
+        .card li { color: var(--text-secondary); font-size: 0.9375rem; padding: 0.25rem 0; }
+        .card li::before { content: '→'; color: var(--accent); margin-right: 0.5rem; font-weight: 700; }
+
+        /* ── Domain Grid ─────────────── */
+        .domain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .domain-card {
+            border-radius: 14px;
+            padding: 1.25rem;
+            border: 1px solid;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .domain-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+
+        .domain-card .domain-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+
+        .domain-card .domain-name {
+            font-weight: 700;
+            font-size: 0.9375rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .domain-card .domain-count {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            opacity: 0.7;
+        }
+
+        .domain-card .domain-tags {
+            margin-top: 0.75rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .domain-tag {
+            font-size: 0.625rem;
+            font-weight: 600;
+            padding: 0.175rem 0.5rem;
+            border-radius: 100px;
+            background: rgba(255,255,255,0.06);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .d-behavioral { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.2); color: var(--accent-glow); }
+        .d-spiritual  { background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.2); color: var(--gold-glow); }
+        .d-cognitive  { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.2); color: #a78bfa; }
+        .d-leadership { background: rgba(244,63,94,0.08);  border-color: rgba(244,63,94,0.2);  color: #fb7185; }
+        .d-relational { background: rgba(20,184,166,0.08); border-color: rgba(20,184,166,0.2); color: var(--teal); }
+
+        /* ── Architecture Diagram ─────── */
+        .arch-diagram {
+            background: linear-gradient(165deg, rgba(13,21,38,0.9), rgba(5,9,17,0.95));
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arch-diagram::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--purple), var(--teal), var(--gold));
+        }
+
+        .arch-row {
+            display: flex;
+            gap: 0.875rem;
+            margin-bottom: 0.875rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .arch-box {
+            padding: 0.875rem 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            min-width: 160px;
+        }
+
+        .arch-box small {
+            display: block;
+            font-size: 0.6875rem;
+            font-weight: 400;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+        }
+
+        .ab-root       { background: rgba(201,168,76,0.1);  border: 1px solid rgba(201,168,76,0.25); color: var(--gold); width: 100%; max-width: 440px; }
+        .ab-consumer   { background: rgba(20,184,166,0.1);  border: 1px solid rgba(20,184,166,0.25); color: var(--teal); }
+        .ab-enterprise { background: rgba(59,130,246,0.1);  border: 1px solid rgba(59,130,246,0.25); color: var(--accent-glow); }
+        .ab-backend    { background: rgba(139,92,246,0.1);  border: 1px solid rgba(139,92,246,0.25); color: #a78bfa; }
+
+        .arch-connector { text-align: center; color: var(--text-dim); font-size: 1.1rem; margin: 0.4rem 0; letter-spacing: 0.15em; }
+
+        /* ── Tables ──────────────────── */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            margin: 1rem 0;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        thead { background: rgba(20, 32, 56, 0.6); }
+        th {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(148,163,184,0.05);
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+        td a {
+            color: var(--accent-glow);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        td a:hover { text-decoration: underline; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(59,130,246,0.025); }
+
+        /* ── Badges ──────────────────── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.625rem;
+            border-radius: 100px;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .badge-live     { background: rgba(34,197,94,0.12);  color: var(--green);  border: 1px solid rgba(34,197,94,0.2); }
+        .badge-planned  { background: rgba(245,158,11,0.12); color: var(--amber);  border: 1px solid rgba(245,158,11,0.2); }
+        .badge-pro      { background: rgba(59,130,246,0.12); color: var(--accent); border: 1px solid rgba(59,130,246,0.2); }
+        .badge-new      { background: rgba(244,63,94,0.12);  color: var(--rose);   border: 1px solid rgba(244,63,94,0.2); }
+        .badge-coral    { background: rgba(249,115,22,0.12); color: var(--coral);  border: 1px solid rgba(249,115,22,0.2); }
+        .badge-purple   { background: rgba(139,92,246,0.12); color: #c4b5fd;       border: 1px solid rgba(139,92,246,0.2); }
+
+        /* ── Alerts ──────────────────── */
+        .alert {
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            margin: 1.25rem 0;
+            font-size: 0.9375rem;
+            line-height: 1.7;
+        }
+
+        .alert-title { font-weight: 700; margin-bottom: 0.375rem; font-size: 1rem; }
+        .alert-info    { background: rgba(59,130,246,0.08);  border: 1px solid rgba(59,130,246,0.18);  color: var(--accent-glow); }
+        .alert-success { background: rgba(34,197,94,0.07);   border: 1px solid rgba(34,197,94,0.18);   color: var(--green); }
+        .alert-warn    { background: rgba(245,158,11,0.07);  border: 1px solid rgba(245,158,11,0.18);  color: var(--amber); }
+        .alert-gold    { background: rgba(201,168,76,0.07);  border: 1px solid rgba(201,168,76,0.18);  color: var(--gold-glow); }
+
+        /* ── Flow ────────────────────── */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 1.25rem 0;
+        }
+
+        .flow-step {
+            padding: 0.5rem 1rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .flow-arrow { color: var(--accent); font-weight: 700; font-size: 1rem; }
+
+        /* ── Phase Timeline ──────────── */
+        .phase-timeline { position: relative; padding-left: 2rem; }
+
+        .phase-timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--purple), var(--teal));
+            border-radius: 2px;
+        }
+
+        .phase-item { position: relative; margin-bottom: 2.5rem; padding-left: 1.5rem; }
+
+        .phase-item::before {
+            content: '';
+            position: absolute;
+            left: -1.625rem; top: 0.55rem;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            background: var(--bg);
+        }
+
+        .phase-item:nth-child(2)::before { border-color: var(--purple); }
+        .phase-item:nth-child(3)::before { border-color: var(--teal); }
+
+        .phase-label {
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.375rem;
+        }
+
+        .phase-item:nth-child(2) .phase-label { color: var(--purple); }
+        .phase-item:nth-child(3) .phase-label { color: var(--teal); }
+
+        .phase-item h4 { font-size: 1.125rem; font-weight: 700; margin-bottom: 0.625rem; }
+
+        /* ── Revenue Tier Cards ──────── */
+        .revenue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .rev-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .rev-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+
+        .rev-tier { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
+        .rev-name { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; color: var(--text-dim); margin-bottom: 0.5rem; }
+        .rev-desc { font-size: 0.75rem; color: var(--text-dim); line-height: 1.5; }
+
+        /* ── Tech Grid ───────────────── */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .tech-item:hover { border-color: var(--border-accent); }
+
+        .tech-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            flex-shrink: 0;
+        }
+
+        .tech-name { font-weight: 600; font-size: 0.875rem; }
+        .tech-desc { font-size: 0.75rem; color: var(--text-dim); }
+
+        /* ── Footer ──────────────────── */
+        .footer {
+            text-align: center;
+            padding: 3.5rem 2rem;
+            border-top: 1px solid var(--border);
+            margin-top: 5rem;
+        }
+
+        .footer .origin { color: var(--text-secondary); font-size: 0.9375rem; margin-bottom: 0.5rem; font-weight: 500; }
+        .footer p { color: var(--text-dim); font-size: 0.8125rem; }
+        .footer .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--gold), var(--gold-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ── Responsive ──────────────── */
+        @media (max-width: 768px) {
+            .container { padding: 0 1.25rem 3rem; }
+            .hero { min-height: 60vh; padding: 4rem 1.25rem; }
+            .arch-row { flex-direction: column; align-items: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-links { display: none; }
+        }
+
+        /* ── Print ───────────────────── */
+        @media print {
+            body { background: white; color: #1a1a1a; }
+            .card, .stat-card, .domain-card { border: 1px solid #ddd; background: #fafafa; }
+            .nav, body::before, .hero::before { display: none; }
+            .hero { min-height: auto; padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══ NAV ═══ -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">RAB Framework</div>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#engine">The Engine</a></li>
+                <li><a href="#assets">Live Assets</a></li>
+                <li><a href="#sprint">Sprint</a></li>
+                <li><a href="#roadmap">Roadmap</a></li>
+                <li><a href="#revenue">Revenue</a></li>
+            </ul>
+            <a href="https://shaunf1p.github.io/rab-framework/leap.html" target="_blank" class="nav-cta">🚀 Launch Live Demo</a>
+        </div>
+    </nav>
+
+    <!-- ═══ HERO ═══ -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-eyebrow">
+                <span class="dot"></span>
+                Confidential · Co-Founder Briefing · April 2026
+            </div>
+            <h1>RAB Framework<br><span class="grad">Platform Status</span></h1>
+            <p class="hero-sub">The diagnostic engine has expanded from 3 frameworks to <strong>30 across 5 domains</strong>. This briefing covers everything built, the strategic architecture, and the path to Phase 2 monetisation.</p>
+
+            <div class="hero-ctas">
+                <a href="https://shaunf1p.github.io/rab-framework/leap.html" target="_blank" class="btn btn-primary">🧠 Psychometric Hub</a>
+                <a href="https://shaunf1p.github.io/rab-framework/" target="_blank" class="btn btn-secondary">📊 Enterprise Dashboard</a>
+                <a href="https://shaunf1p.github.io/rab-framework/analytics.html" target="_blank" class="btn btn-teal">📈 Analytics</a>
+            </div>
+
+            <div class="hero-meta">
+                <span>Prepared for <strong>Bukola Olajire</strong></span>
+                <div class="divider"></div>
+                <span>By <strong>Shaun Muhammad</strong> · Lead Architect</span>
+                <div class="divider"></div>
+                <span><strong>April 18, 2026</strong></span>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+
+        <!-- ═══ SECTION 1: PLATFORM OVERVIEW ═══ -->
+        <div id="overview" class="section-header">
+            <div class="section-num">01</div>
+            <h2>Platform Overview</h2>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" style="color:var(--teal)">30</div>
+                <div class="stat-label">Diagnostic Frameworks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color:var(--gold)">5</div>
+                <div class="stat-label">Psychometric Domains</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color:var(--accent)">2</div>
+                <div class="stat-label">Platform Sides (B2C + B2B)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color:var(--green)">100%</div>
+                <div class="stat-label">Client-Side Privacy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color:var(--purple)">7</div>
+                <div class="stat-label">Telegram Bot Commands</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color:var(--coral)">Live</div>
+                <div class="stat-label">All Systems</div>
+            </div>
+        </div>
+
+        <div class="arch-diagram">
+            <div class="arch-row">
+                <div class="arch-box ab-root">RAB ENGINE · Psychometric Routing Core<small>30 Frameworks · 5 Domains · 0 API Costs</small></div>
+            </div>
+            <div class="arch-connector">▼</div>
+            <div class="arch-row">
+                <div class="arch-box ab-consumer">LEAP HUB (B2C)<small>leap.html · No Login · Viral Engine</small></div>
+                <div class="arch-box ab-enterprise">RAB DASHBOARD (B2B)<small>index.html · Auth-Gated · Governance</small></div>
+            </div>
+            <div class="arch-connector">▼ ▼</div>
+            <div class="arch-row">
+                <div class="arch-box ab-backend">Supabase DB<small>PostgreSQL + Auth + RLS</small></div>
+                <div class="arch-box ab-backend">Cloud Run Relay<small>Node.js API · us-east1</small></div>
+                <div class="arch-box ab-backend">GHL CRM<small>Auto-Contact + Tags</small></div>
+                <div class="arch-box ab-backend">Telegram Bot<small>Two-Way Command Center</small></div>
+            </div>
+        </div>
+
+        <!-- ═══ SECTION 2: THE 30-FRAMEWORK ENGINE ═══ -->
+        <div id="engine" class="section-header">
+            <div class="section-num">02</div>
+            <h2>The 30-Framework Diagnostic Engine</h2>
+        </div>
+
+        <div class="alert alert-success">
+            <div class="alert-title">✅ Phase 1 Complete — All 5 Domains Routed</div>
+            The engine now routes across 30 unique psychometric frameworks. Every framework has its own question bank, mathematical scoring logic, result renderer, and AI-driven interpretation script — all calculated client-side with zero LLM costs.
+        </div>
+
+        <div class="domain-grid">
+            <div class="domain-card d-behavioral">
+                <div class="domain-icon">🧠</div>
+                <div class="domain-name">Behavioral Psychology</div>
+                <div class="domain-count">6 Frameworks</div>
+                <div class="domain-tags">
+                    <span class="domain-tag">Insights</span>
+                    <span class="domain-tag">DISC</span>
+                    <span class="domain-tag">Enneagram</span>
+                    <span class="domain-tag">MBTI</span>
+                    <span class="domain-tag">StrengthsFinder</span>
+                    <span class="domain-tag">Cognitive Bias</span>
+                </div>
+            </div>
+            <div class="domain-card d-spiritual">
+                <div class="domain-icon">✝️</div>
+                <div class="domain-name">Spiritual Calling</div>
+                <div class="domain-count">6 Frameworks</div>
+                <div class="domain-tags">
+                    <span class="domain-tag">APEST</span>
+                    <span class="domain-tag">Spiritual Gifts</span>
+                    <span class="domain-tag">Servant Leadership</span>
+                    <span class="domain-tag">Kingdom Mountain</span>
+                    <span class="domain-tag">SHAPE</span>
+                    <span class="domain-tag">Formation Stage</span>
+                </div>
+            </div>
+            <div class="domain-card d-cognitive">
+                <div class="domain-icon">⚡</div>
+                <div class="domain-name">Cognitive Alpha</div>
+                <div class="domain-count">6 Frameworks</div>
+                <div class="domain-tags">
+                    <span class="domain-tag">Logic IQ</span>
+                    <span class="domain-tag">Emotional EQ</span>
+                    <span class="domain-tag">Strategic Action</span>
+                    <span class="domain-tag">Growth Mindset</span>
+                    <span class="domain-tag">Decision Fatigue</span>
+                    <span class="domain-tag">Mental Toughness</span>
+                </div>
+            </div>
+            <div class="domain-card d-leadership">
+                <div class="domain-icon">👑</div>
+                <div class="domain-name">Leadership DNA</div>
+                <div class="domain-count">6 Frameworks</div>
+                <div class="domain-tags">
+                    <span class="domain-tag">Leadership Style</span>
+                    <span class="domain-tag">Situational</span>
+                    <span class="domain-tag">Conflict Resolution</span>
+                    <span class="domain-tag">Team Role</span>
+                    <span class="domain-tag">Power Dynamics</span>
+                    <span class="domain-tag">Leadership EI</span>
+                </div>
+            </div>
+            <div class="domain-card d-relational">
+                <div class="domain-icon">❤️</div>
+                <div class="domain-name">Relational DNA</div>
+                <div class="domain-count">6 Frameworks</div>
+                <div class="domain-tags">
+                    <span class="domain-tag">Love Languages</span>
+                    <span class="domain-tag">Appreciation@Work</span>
+                    <span class="domain-tag">Attachment Style</span>
+                    <span class="domain-tag">Gottman Patterns</span>
+                    <span class="domain-tag">Relational Needs</span>
+                    <span class="domain-tag">Communication Style</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>⚙️ Zero-Cost AI Analysis Engine</h3>
+            <p>We deliberately avoided LLM APIs. Instead, every framework runs a <strong>deterministic AI interpretation layer</strong> — a score-aware script engine that generates ruthlessly accurate, corporate-grade psychological read-outs in real time based on the exact mathematical output of each user's profile. <em>No API bill. No latency. No hallucinations.</em></p>
+            <ul>
+                <li>Score combinations map to pre-engineered insight scripts tailored per framework</li>
+                <li>Secondary profile detection — if your primary score ties, the engine identifies it</li>
+                <li>All processing is 100% client-side — zero user data leaves the browser unless they email capture</li>
+            </ul>
+        </div>
+
+        <!-- ═══ SECTION 3: LIVE ASSETS ═══ -->
+        <div id="assets" class="section-header">
+            <div class="section-num">03</div>
+            <h2>Live Assets</h2>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Live URL / Identifier</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Psychometric Hub</strong> (Consumer B2C)</td>
+                        <td><a href="https://shaunf1p.github.io/rab-framework/leap.html" target="_blank">shaunf1p.github.io/rab-framework/leap.html ↗</a></td>
+                        <td><span class="badge badge-live">✅ LIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enterprise Dashboard</strong> (B2B)</td>
+                        <td><a href="https://shaunf1p.github.io/rab-framework/" target="_blank">shaunf1p.github.io/rab-framework/ ↗</a></td>
+                        <td><span class="badge badge-live">✅ LIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analytics Dashboard</strong></td>
+                        <td><a href="https://shaunf1p.github.io/rab-framework/analytics.html" target="_blank">shaunf1p.github.io/rab-framework/analytics.html ↗</a></td>
+                        <td><span class="badge badge-live">✅ LIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Co-Founder Briefing</strong> (this page)</td>
+                        <td><a href="https://shaunf1p.github.io/rab-framework/bukola-briefing-v3.html" target="_blank">shaunf1p.github.io/rab-framework/bukola-briefing-v3.html ↗</a></td>
+                        <td><span class="badge badge-live">✅ LIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cloud Run Relay</strong> (API)</td>
+                        <td><a href="https://rab-relay-454433309736.us-east1.run.app" target="_blank">rab-relay-454433309736.us-east1.run.app ↗</a></td>
+                        <td><span class="badge badge-live">✅ LIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Supabase Database</strong></td>
+                        <td>Project: RAB Framework (epxjcrlqgqvgglpohujv)</td>
+                        <td><span class="badge badge-live">✅ ACTIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>GHL Workflow</strong></td>
+                        <td>Leap Score Routing Pipeline</td>
+                        <td><span class="badge badge-live">✅ PUBLISHED</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Telegram Bot</strong></td>
+                        <td>@RABFrameworkAlerts_bot · RAB Framework Admin Group</td>
+                        <td><span class="badge badge-live">✅ ACTIVE</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>GitHub Repo</strong></td>
+                        <td><a href="https://github.com/ShaunF1P/rab-framework" target="_blank">github.com/ShaunF1P/rab-framework ↗</a></td>
+                        <td><span class="badge badge-pro">🔒 PRIVATE</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ═══ SECTION 4: SPRINT DELIVERABLES ═══ -->
+        <div id="sprint" class="section-header">
+            <div class="section-num">04</div>
+            <h2>Sprint Deliverables</h2>
+        </div>
+
+        <div class="card">
+            <h3><span>🚀</span> 30-Framework Domain Expansion</h3>
+            <p>The platform's single biggest architectural upgrade. We went from 9 frameworks to a full <strong>30-framework routing engine</strong> across 5 psychometric verticals. This unlocks enterprise use cases in HR, executive coaching, spiritual formation, and couples/relational therapy.</p>
+            <ul>
+                <li><strong>21 new question banks</strong> fully authored — all original, clinical-grade questions</li>
+                <li><strong>21 new calculation functions</strong> — domain-appropriate scoring algorithms per framework</li>
+                <li><strong>Full dispatch chain update</strong> — <code style="color:var(--teal)">calculateResults</code> and <code style="color:var(--teal)">renderResults</code> route all 30 frameworks</li>
+                <li><strong>5-domain UI grid</strong> — 6 framework cards per domain with tags, estimated minutes, lock state</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span>🏆</span> Victory Lap &amp; Brag Receipt Engine</h3>
+            <p>A viral sharing engine that transforms assessment results into downloadable, social-media-ready infographics.</p>
+            <div class="flow">
+                <span class="flow-step">Complete Assessment</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Select Wins</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Generate Receipt</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Download PNG</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Share on Socials</span>
+            </div>
+            <div class="alert alert-info">
+                <div class="alert-title">💡 Why This Matters</div>
+                Every shared brag receipt is a free advertisement with our brand embedded. The Win + Win = Decision equation format is inherently shareable and designed to drive return traffic.
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span>🔗</span> GoHighLevel Lead Pipeline</h3>
+            <p>Every email capture triggers a three-pronged data flow:</p>
+            <div class="flow">
+                <span class="flow-step">📧 Email Entered</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Supabase DB</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">Cloud Run Relay</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">GHL Contact + Tags</span>
+            </div>
+            <ul>
+                <li>Universal tag: <code style="color:var(--teal)">leap-score</code></li>
+                <li>Framework-specific tags: <code style="color:var(--teal)">leap-mbti</code>, <code style="color:var(--teal)">leap-apest</code>, <code style="color:var(--teal)">leap-love-languages</code> etc.</li>
+                <li>Enables precise segmentation and partner data licensing</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span>📱</span> Telegram Bot — Mobile Command Center</h3>
+            <p>Query the entire RAB ecosystem from your phone — no dashboard needed.</p>
+            <div class="table-wrap" style="margin-top:1rem">
+                <table>
+                    <thead><tr><th>Command</th><th>Function</th></tr></thead>
+                    <tbody>
+                        <tr><td><code style="color:var(--teal)">/help</code></td><td>Full command menu</td></tr>
+                        <tr><td><code style="color:var(--teal)">/leads</code></td><td>Last 10 email captures</td></tr>
+                        <tr><td><code style="color:var(--teal)">/stats</code></td><td>Pipeline metrics &amp; conversion rates</td></tr>
+                        <tr><td><code style="color:var(--teal)">/assessments</code></td><td>Last 5 assessments with scores</td></tr>
+                        <tr><td><code style="color:var(--teal)">/score &lt;email&gt;</code></td><td>Look up a specific person's profile</td></tr>
+                        <tr><td><code style="color:var(--teal)">/health</code></td><td>Full system health check</td></tr>
+                        <tr><td><code style="color:var(--teal)">/ghl</code></td><td>GHL pipeline connection status</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span>🔐</span> Infrastructure Separation</h3>
+            <div class="alert alert-success">
+                <div class="alert-title">✅ Fully Separated from Everfast</div>
+                RAB Framework and Everfast Field OS now run on entirely independent Telegram bots, Cloud Run services, credentials, and group channels.
+            </div>
+            <div class="table-wrap" style="margin-top:1rem">
+                <table>
+                    <thead><tr><th>Component</th><th>Before</th><th>After</th></tr></thead>
+                    <tbody>
+                        <tr><td>Telegram Bot</td><td style="color:var(--red)">Shared with Everfast</td><td style="color:var(--green)">@RABFrameworkAlerts_bot</td></tr>
+                        <tr><td>Telegram Group</td><td style="color:var(--red)">"Everfast Admin"</td><td style="color:var(--green)">"RAB Framework Admin"</td></tr>
+                        <tr><td>Bot Token</td><td style="color:var(--red)">Everfast token</td><td style="color:var(--green)">RAB-specific token</td></tr>
+                        <tr><td>Cloud Run Env</td><td style="color:var(--red)">Mixed credentials</td><td style="color:var(--green)">RAB-only credentials</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ═══ SECTION 5: STRATEGIC ROADMAP ═══ -->
+        <div id="roadmap" class="section-header">
+            <div class="section-num">05</div>
+            <h2>Strategic Roadmap</h2>
+        </div>
+
+        <div class="alert alert-gold">
+            <div class="alert-title">📍 Where We Are Today</div>
+            Phase 1 (The Engine) is live. 30 frameworks routed. The question banks, scoring, and result renderers are operational. Phase 2 (Monetisation Gate) is the next sprint — the unlock wall, freemium referral loop, and Supabase user accounts.
+        </div>
+
+        <div class="phase-timeline">
+            <div class="phase-item">
+                <div class="phase-label">Phase 1 — ✅ COMPLETE</div>
+                <h4>The 30-Framework Engine</h4>
+                <div class="card" style="margin-top:0.5rem">
+                    <ul>
+                        <li><strong>5 Psychometric Domains</strong> — Behavioral, Spiritual, Cognitive, Leadership, Relational</li>
+                        <li><strong>30 Frameworks Routed</strong> — Full question banks + scoring + AI interpretation</li>
+                        <li><strong>Deterministic AI Copilot</strong> — Zero-cost, zero-latency insight engine</li>
+                        <li><strong>State Persistence</strong> — Selected domain/framework survives page refresh</li>
+                        <li><strong>GHL + Telegram + Supabase</strong> — Full data pipeline operational</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="phase-item">
+                <div class="phase-label">Phase 2 — Next Sprint (7–14 Days)</div>
+                <h4>Freemium Monetisation Gate</h4>
+                <div class="card" style="margin-top:0.5rem">
+                    <ul>
+                        <li><strong>Unlock Gate Modal</strong> — 3 free frameworks, then referral/pay/share wall</li>
+                        <li><strong>Referral Tracking</strong> — Unique referral links tracked per user in Supabase</li>
+                        <li><strong>Share-to-Unlock</strong> — Share on LinkedIn/X to access premium frameworks</li>
+                        <li><strong>Supabase Auth</strong> — Anonymous → authenticated user pathway</li>
+                        <li><strong>Usage Telemetry</strong> — Per-framework completion rates, domain popularity</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="phase-item">
+                <div class="phase-label">Phase 3 — 30–60 Days</div>
+                <h4>Enterprise Scale &amp; White-Label</h4>
+                <div class="card" style="margin-top:0.5rem">
+                    <ul>
+                        <li><strong>White-Label B2B Licensing</strong> — Deploy this engine inside a client's domain (churches, coaches, HR firms)</li>
+                        <li><strong>PDF Report Generation</strong> — Full downloadable diagnostic report per framework</li>
+                        <li><strong>Team Assessment Mode</strong> — Aggregate team results for leadership/org development</li>
+                        <li><strong>Partner Data Portal</strong> — Anonymized aggregate behavioral insights for B2B licensing</li>
+                        <li><strong>ERP/HRIS Integration</strong> — Demo connectors for enterprise systems</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SECTION 6: REVENUE MODEL ═══ -->
+        <div id="revenue" class="section-header">
+            <div class="section-num">06</div>
+            <h2>Revenue Model</h2>
+        </div>
+
+        <div class="revenue-grid">
+            <div class="rev-card">
+                <div class="rev-tier" style="color:var(--teal)">Free</div>
+                <div class="rev-name">Consumer Access</div>
+                <div class="rev-desc">3 free frameworks. Top-of-funnel lead gen. High-volume viral entry point.</div>
+            </div>
+            <div class="rev-card">
+                <div class="rev-tier" style="color:var(--accent)">Refer</div>
+                <div class="rev-name">Share-to-Unlock</div>
+                <div class="rev-desc">Invite a friend or share on socials. Unlocks full framework library free.</div>
+            </div>
+            <div class="rev-card">
+                <div class="rev-tier" style="color:var(--gold)">$19–$49</div>
+                <div class="rev-name">Premium Access</div>
+                <div class="rev-desc">One-time or monthly. Full 30 framework library. PDF report download.</div>
+            </div>
+            <div class="rev-card">
+                <div class="rev-tier" style="color:var(--purple)">SaaS</div>
+                <div class="rev-name">Enterprise Dashboard</div>
+                <div class="rev-desc">B2B subscription. Team diagnostics. HR governance. Custom reporting.</div>
+            </div>
+            <div class="rev-card">
+                <div class="rev-tier" style="color:var(--coral)">Licensed</div>
+                <div class="rev-name">White-Label</div>
+                <div class="rev-desc">Full engine deployed under client's brand. Churches, coaches, HR firms.</div>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <div class="alert-title">🎯 Total Addressable Market Expansion</div>
+            The original TAM was "corporate employees considering job changes." The 30-framework architecture expands this to: <strong>executive coaches, mega-churches, seminary programs, relationship therapists, HR departments, spiritual formation programs, and leadership academies</strong>. The engine is the same. The white-label opportunity is enormous.
+        </div>
+
+        <!-- ═══ SECTION 7: TECH STACK ═══ -->
+        <div class="section-header">
+            <div class="section-num">07</div>
+            <h2>Technical Stack</h2>
+        </div>
+
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(59,130,246,0.1);color:var(--accent)">🌐</div>
+                <div>
+                    <div class="tech-name">Frontend</div>
+                    <div class="tech-desc">Vanilla HTML/CSS/JS · Chart.js · html2canvas · Zero dependencies</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(20,184,166,0.1);color:var(--teal)">📦</div>
+                <div>
+                    <div class="tech-name">Hosting</div>
+                    <div class="tech-desc">GitHub Pages · Zero-cost · Auto-deploy on push</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(139,92,246,0.1);color:var(--purple)">🗄️</div>
+                <div>
+                    <div class="tech-name">Database</div>
+                    <div class="tech-desc">Supabase · PostgreSQL + Auth + Row-Level Security</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(249,115,22,0.1);color:var(--coral)">⚡</div>
+                <div>
+                    <div class="tech-name">API / Relay</div>
+                    <div class="tech-desc">Node.js + Express · Google Cloud Run · us-east1</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(201,168,76,0.1);color:var(--gold)">💼</div>
+                <div>
+                    <div class="tech-name">CRM</div>
+                    <div class="tech-desc">GoHighLevel Enterprise · Workflows + Tags + Contacts</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon" style="background:rgba(34,197,94,0.1);color:var(--green)">📱</div>
+                <div>
+                    <div class="tech-name">Notifications</div>
+                    <div class="tech-desc">Telegram Bot API · Webhook-based · Real-time alerts</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ FOOTER ═══ -->
+        <div class="footer">
+            <div class="logo">RAB Framework</div>
+            <p class="origin">Original Concept by <strong>Bukola Olajire</strong> · Johns Hopkins Carey Business School</p>
+            <p>Built by RAB Engineering · Grounded in COSO ERM, ISO 31000, and Behavioral Economics</p>
+            <p style="margin-top:0.5rem">
+                <a href="https://shaunf1p.github.io/rab-framework/leap.html" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">🧠 Launch Psychometric Hub ↗</a>
+                &nbsp;·&nbsp;
+                <a href="https://shaunf1p.github.io/rab-framework/" target="_blank" style="color:var(--teal);text-decoration:none;font-weight:500">📊 Enterprise Dashboard ↗</a>
+            </p>
+            <p style="margin-top:1.5rem;color:var(--text-dim);font-size:0.75rem">Confidential — April 18, 2026 · For Co-Founder Distribution Only</p>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -573,7 +574,36 @@
             font-weight: 600;
         }
 
-        /* ── Results ────────────────────────────── */
+        /* ── Length Toggle Buttons ──────────────── */
+        .step-length-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+        .step-length-btn:hover {
+            border-color: var(--border-glow);
+            color: var(--text-primary);
+        }
+        .step-length-btn.selected {
+            border-color: var(--teal);
+            background: var(--teal-dim);
+            color: var(--teal);
+            box-shadow: 0 0 0 1px var(--teal), 0 4px 16px rgba(20, 184, 166, 0.12);
+        }
+        .step-length-btn.selected::after {
+            content: ' ✓';
+            font-size: 0.75rem;
+        }
+
+
         .results-container { animation: fadeIn 0.6s ease; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(24px); }
@@ -907,44 +937,85 @@
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
     </div>
-    <div class="particle-field" id="particle-field"></div>
+    <div class="particle-field" id="particles"></div>
 
-    <!-- Toggles -->
-    <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle" aria-label="Toggle Theme">
-        <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        <svg class="theme-icon-sun" style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Theme">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
-    <button class="motion-toggle" onclick="toggleMotion()" id="motion-toggle">
-        <span class="motion-dot"></span>
-        <span id="motion-label">Motion On</span>
+    <button class="motion-toggle" id="motion-toggle" aria-label="Toggle Animation">
+        <div class="motion-dot"></div>
+        Motion
     </button>
 
     <div class="page-content">
-        <!-- ═══════════════ HERO ═══════════════ -->
-        <header class="hero">
-            <div class="hero-badge">Free Risk Assessment</div>
-            <h1>What's Your<br><span>Leap Score</span>?</h1>
-            <p class="hero-sub">Should you take the leap?</p>
-            <p>Analyze your next big life decision using the same professional risk frameworks Fortune 500 companies pay millions for.</p>
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <div class="hero-stat-value" id="stat-taken">2,847</div>
-                    <div class="hero-stat-label">Assessments Taken</div>
+        <div class="hero">
+            <div class="hero-badge">Psychometric Analytics Hub</div>
+            <h1>What's Your<br><span>Leap Score?</span></h1>
+            <p class="hero-sub" style="margin-top:1rem;">Deep-dive diagnostics for life transitions, behavioral psychology, and calling.</p>
+        </div>
+
+        <div class="container" id="app-root">
+
+            <!-- ── STEP 0: DOMAIN PIPELINE ────────────────────────────────────────────── -->
+            <div id="step-domain" class="view active">
+                <h2 class="step-title">Select Diagnostics Domain</h2>
+                <p class="step-desc">What framework sector do you want to evaluate today?</p>
+
+                <div class="decision-grid">
+                    <div class="decision-card" data-domain="leap_risk" onclick="selectDomain(this)">
+                        <div class="decision-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                        </div>
+                        <h3>Life Leap Risk</h3>
+                        <p>Analyze the mathematical risk of a major life transition.</p>
+                    </div>
+
+                    <div class="decision-card" data-domain="personality" onclick="selectDomain(this)">
+                        <div class="decision-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <h3>Behavioral Psychology</h3>
+                        <p>Unlock your personality profile (DISC, Insights Color, Enneagram).</p>
+                    </div>
+
+                    <div class="decision-card" data-domain="spiritual" onclick="selectDomain(this)">
+                        <div class="decision-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 7H7"></path><circle cx="12" cy="12" r="10"></circle></svg>
+                        </div>
+                        <h3>Spiritual Calling</h3>
+                        <p>Evaluate spiritual gifts and ministry architecture (APEST).</p>
+                    </div>
+
+                    <div class="decision-card" data-domain="cognitive" onclick="selectDomain(this)">
+                        <div class="decision-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path><line x1="2" y1="20" x2="2.01" y2="20"></line></svg>
+                        </div>
+                        <h3>Cognitive Logic (Alpha)</h3>
+                        <p>Rapid tactical IQ and logical deduction testing.</p>
+                    </div>
+                    <div class="decision-card" data-domain="leadership" onclick="selectDomain(this)">
+                        <div class="decision-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        </div>
+                        <h3>Leadership DNA</h3>
+                        <p>Command style, situational wiring, conflict patterns, team role, and power base.</p>
+                    </div>
+                    <div class="decision-card" data-domain="relational" onclick="selectDomain(this)">
+                        <div class="decision-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        </div>
+                        <h3>Relational DNA</h3>
+                        <p>Love languages, attachment wiring, conflict style, and communication patterns.</p>
+                    </div>
                 </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value">3</div>
-                    <div class="hero-stat-label">Frameworks</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value">Free</div>
-                    <div class="hero-stat-label">Always</div>
+
+                <div style="text-align: right; margin-top: 2rem;">
+                    <button class="btn btn-primary" id="btn-to-next-step" disabled onclick="routeFromDomain()">Continue Configuration &rarr;</button>
                 </div>
             </div>
-        </header>
 
-        <div class="container">
-            <!-- ═══ Step 1: Choose Decision ═══ -->
-            <div id="step-decision" class="view active">
+            <!-- ── STEP 1: LEAP TARGET (Only for Risk Domain) ────────────────────────── -->
+            <div id="step-decision" class="view">
                 <h2 class="step-title">What are you considering?</h2>
                 <p class="step-desc">Select the life decision you want to analyze</p>
                 <div class="decision-grid" id="decision-grid">
@@ -978,8 +1049,6 @@
                         <h3>Retirement</h3>
                         <p>Transitioning out of the workforce</p>
                     </div>
-
-                    <!-- ── New Consumer Categories ── -->
                     <div class="decision-card" data-decision="family" onclick="selectDecision(this)">
                         <div class="decision-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
                         <h3>Growing the Family</h3>
@@ -1002,33 +1071,28 @@
                     </div>
                 </div>
                 <div style="text-align:center;margin-top:2rem;">
+                    <button class="btn btn-secondary" onclick="routeBackToDomain()">Back</button>
                     <button class="btn btn-primary" id="btn-to-framework" disabled onclick="goToFramework()">Choose Your Framework</button>
                 </div>
             </div>
 
-            <!-- ═══ Step 2: Choose Framework ═══ -->
+            <!-- ── STEP 2: FRAMEWORK ASSIGNMENT ──────────────────────────────────────── -->
             <div id="step-framework" class="view">
-                <h2 class="step-title">Choose Your Analysis Lens</h2>
-                <p class="step-desc">Each framework provides a different perspective — the same tools used by Fortune 500 boards</p>
-                <div class="framework-grid" id="framework-grid">
-                    <div class="framework-card" data-framework="swot" onclick="selectFramework(this)">
-                        <span class="tag">12 Questions</span>
-                        <h3>SWOT Analysis</h3>
-                        <p>Map your Strengths, Weaknesses, Opportunities, and Threats for a strategic overview of your decision.</p>
-                    </div>
-                    <div class="framework-card" data-framework="risk_reward" onclick="selectFramework(this)">
-                        <span class="tag">10 Questions</span>
-                        <h3>Risk-Reward Matrix</h3>
-                        <p>Plot your decision on a risk vs. reward axis to get a clear go/no-go recommendation.</p>
-                    </div>
-                    <div class="framework-card" data-framework="decision_matrix" onclick="selectFramework(this)">
-                        <span class="tag">12 Questions</span>
-                        <h3>Decision Matrix</h3>
-                        <p>Score and weight what matters most — finances, growth, fulfillment, family — and compare paths objectively.</p>
+                <h2 class="step-title">Select Diagnostics Matrix</h2>
+                <p class="step-desc" id="framework-desc-text"></p>
+
+                <div class="decision-grid" id="dynamic-framework-grid"></div>
+
+                <div id="step-length" style="display:none; margin-top:2rem; text-align:center;">
+                    <h3 style="margin-bottom:1rem; font-family:var(--font-display); color:var(--text-primary);">Diagnostic Depth Configuration</h3>
+                    <div style="display:flex; gap:1rem; justify-content:center;">
+                        <button class="btn btn-secondary step-length-btn" data-len="micro" onclick="selectLength('micro')">Micro Profile (~1 min)</button>
+                        <button class="btn btn-secondary step-length-btn selected" data-len="medium" onclick="selectLength('medium')">Standard Base (~4 min)</button>
                     </div>
                 </div>
+
                 <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:2rem;">
-                    <button class="btn btn-secondary" onclick="goToDecision()">Back</button>
+                    <button class="btn btn-secondary" onclick="routeBackToDomain()">Back</button>
                     <button class="btn btn-primary" id="btn-to-questions" disabled onclick="goToQuestions()">Start Assessment</button>
                 </div>
             </div>
@@ -1083,7 +1147,7 @@
         <footer class="leap-footer">
             <a href="index.html">RAB Framework</a> — Enterprise Risk Appetite Governance
             <p>Leap Score is powered by the RAB Framework</p>
-            <p>Original Concept by Bukola Olajire | Johns Hopkins Carey Business School | Built by F1rst Position</p>
+            <p>Original Concept by Bukola Olajire | Johns Hopkins Carey Business School | Built by RAB Engineering</p>
         </footer>
     </div>
 
@@ -1130,6 +1194,6 @@
         // Animate hero stat on load
         setTimeout(() => animateCounter(document.getElementById('stat-taken'), 2847), 500);
     </script>
-    <script src="js/leap.js"></script>
+    <script src="js/leap.js?v=20260418f"></script>
 </body>
 </html>

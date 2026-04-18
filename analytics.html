@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Analytics Command Center</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            /* Enterprise Dark Mode Palette */
+            --bg-base: #030712;
+            --bg-surface: rgba(15, 23, 42, 0.4);
+            --bg-card: rgba(30, 41, 59, 0.5);
+            
+            --border: rgba(51, 65, 85, 0.5);
+            --border-glow: rgba(20, 184, 166, 0.3);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-dim: #64748b;
+            
+            --teal: #14b8a6;
+            --amber: #f59e0b;
+            --violet: #8b5cf6;
+            --rose: #f43f5e;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            /* Animated Background Blob */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(20, 184, 166, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+            position: relative;
+            z-height: 10;
+        }
+
+        /* ─── Header ─── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .live-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(20, 184, 166, 0.1);
+            color: var(--teal);
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--teal);
+            box-shadow: 0 0 8px var(--teal);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ─── Metric Cards ─── */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-glow);
+        }
+
+        /* Subtle glowing corner on cards */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--teal) 0%, transparent 70%);
+            opacity: 0.1;
+            border-radius: 50%;
+        }
+
+        .card-label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-value {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #fff;
+        }
+
+        .card-value.highlight-amber { color: var(--amber); }
+        .card-value.highlight-teal { color: var(--teal); }
+        .card-value.highlight-violet { color: var(--violet); }
+
+        .card-subtext {
+            font-size: 0.8125rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* ─── Charts Row ─── */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .charts-row { grid-template-columns: 1fr; }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+
+        /* ─── Scrolling Ticker ─── */
+        .ticker-card {
+            background: linear-gradient(90deg, rgba(30, 41, 59, 0.2), rgba(20, 184, 166, 0.05));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ticker-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--amber);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .ticker-stream {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            height: 24px;
+        }
+
+        .ticker-content {
+            font-family: monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            animation: scroll 15s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header">
+            <div>
+                <h1>RAB Command Center</h1>
+                <p style="color: var(--text-dim); margin-top: 0.5rem;">Enterprise Risk Appetite & Pipeline Engine</p>
+            </div>
+            <div class="live-status">
+                <div class="live-dot"></div>
+                Connected to Supabase
+            </div>
+        </div>
+
+        <!-- ── Top Metrics ── -->
+        <div class="metrics-grid">
+            <div class="glass-card">
+                <div class="card-label">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+                    Total Assessments
+                </div>
+                <div class="card-value" id="val-assessments">0</div>
+                <div class="card-subtext">Consumer Funnel Traps <span style="color:var(--teal)">▲ Live</span></div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-label" style="color:var(--amber)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Captured Leads
+                </div>
+                <div class="card-value highlight-amber" id="val-leads">0</div>
+                <div class="card-subtext">Ready for Pipeline<span id="val-conv">0% Conv</span></div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-label" style="color:var(--teal)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                    Victory Laps
+                </div>
+                <div class="card-value highlight-teal" id="val-victory">0</div>
+                <div class="card-subtext">Brag Receipts Generated</div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-label" style="color:var(--violet)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    Virality Index
+                </div>
+                <div class="card-value highlight-violet" id="val-shares">0</div>
+                <div class="card-subtext">Tracked Social Shares</div>
+            </div>
+        </div>
+
+        <!-- ── Sentinel AI Briefing ── -->
+        <div class="glass-card" style="margin-bottom: 2.5rem; border-color: rgba(139, 92, 246, 0.4);">
+            <div class="card-label" style="color: var(--violet); align-items:center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M12 12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"></path><line x1="3" y1="10" x2="3" y2="14"></line><line x1="21" y1="10" x2="21" y2="14"></line><line x1="7" y1="6" x2="7" y2="18"></line><line x1="17" y1="6" x2="17" y2="18"></line></svg>
+                Sentinel AI Analysis
+            </div>
+            <div id="ai-global-insights" style="font-size: 1.125rem; line-height: 1.6; color: var(--text-primary);">
+                Initiating telemetry analysis...
+            </div>
+        </div>
+
+        <!-- ── Charts ── -->
+        <div class="charts-row">
+            <div class="glass-card">
+                <div class="card-label">Volume Configuration</div>
+                <div class="chart-container">
+                    <canvas id="conversionChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="glass-card">
+                <div class="card-label">Flight Risk Hotspots (Polar Vector)</div>
+                <div class="chart-container">
+                    <canvas id="decisionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Data Ticker ── -->
+        <div class="ticker-card">
+            <div class="ticker-label">Live Event Stream //</div>
+            <div class="ticker-stream">
+                <div class="ticker-content" id="live-ticker">Waiting for Supabase handshakes... [INITIATING TCP PROT]... No new anomalous leaps detected in the last 60 seconds...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Analytics Engine Script -->
+    <script>
+        const SUPABASE_URL = 'https://epxjcrlqgqvgglpohujv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVweGpjcmxxZ3F2Z2dscG9odWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ4MTUwMzAsImV4cCI6MjA2MDM5MTAzMH0.ND4Y8a_jHO4BPXPF7D25RSm7jgYhCPiJQEMDi-rkq0k';
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let convChart, decChart;
+
+        // Animate counter function for "Wow Factor"
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // Ease out quad
+                const easeOut = progress * (2 - progress);
+                obj.innerHTML = Math.floor(easeOut * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerHTML = end; // Ensure explicit final value
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        async function initDashboard() {
+            try {
+                // Fetch Leads & Assessments perfectly
+                const { count: leadsCount } = await sb.from('leap_leads').select('*', { count: 'exact', head: true });
+                const { data: assessments } = await sb.from('leap_assessments').select('*');
+                
+                const totalAssessments = assessments ? assessments.length : 0;
+                const totalLeads = leadsCount || 0;
+                
+                const victoryLaps = assessments ? assessments.filter(a => a.victory_lap_taken === true).length : 0;
+                const shares = assessments ? assessments.filter(a => a.social_shared && a.social_shared !== '').length : 0;
+
+                // Fire Counter Animations
+                animateValue(document.getElementById('val-assessments'), 0, totalAssessments, 1500);
+                animateValue(document.getElementById('val-leads'), 0, totalLeads, 1500);
+                animateValue(document.getElementById('val-victory'), 0, victoryLaps, 1500);
+                animateValue(document.getElementById('val-shares'), 0, shares, 1500);
+
+                const convRate = totalAssessments > 0 ? Math.round((totalLeads / totalAssessments) * 100) : 0;
+                document.getElementById('val-conv').textContent = `${convRate}% Conversion`;
+
+                // Build Decision Doughnut Data
+                const decisionCounts = {};
+                if (assessments) {
+                    assessments.forEach(a => {
+                        const d = a.decision_type || 'unclassified';
+                        decisionCounts[d] = (decisionCounts[d] || 0) + 1;
+                    });
+                }
+                const decLabels = Object.keys(decisionCounts).map(l => l.replace('_', ' ').toUpperCase());
+                const decData = Object.values(decisionCounts);
+
+                // Build Ticker
+                if (assessments && assessments.length > 0) {
+                    const latest = assessments.slice(0, 5).map(a => 
+                        `[${new Date(a.created_at).toLocaleTimeString()}] New ${a.decision_type ? a.decision_type.toUpperCase() : 'UNKNOWN'} leap detected. Risk Score: ${a.overall_score || '?'} `
+                    ).join(' /// ');
+                    document.getElementById('live-ticker').textContent = latest;
+                }
+
+                renderCharts(totalAssessments, totalLeads, decLabels, decData);
+                generateDashboardInsights(assessments, leadsCount, decisionCounts);
+            } catch (error) {
+                console.error("Dashboard engine failure:", error);
+                document.getElementById('live-ticker').textContent = "[ERROR: SUPABASE CONNECTION FAILED]";
+                document.getElementById('live-ticker').style.color = "var(--rose)";
+            }
+        }
+
+        function renderCharts(assessments, leads, decLabels, decData) {
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = "'Inter', sans-serif";
+
+            // Bar Chart (Conversion)
+            const ctxBar = document.getElementById('conversionChart').getContext('2d');
+            
+            // Create Gradient
+            const gradientTeal = ctxBar.createLinearGradient(0, 0, 0, 400);
+            gradientTeal.addColorStop(0, 'rgba(20, 184, 166, 0.8)');
+            gradientTeal.addColorStop(1, 'rgba(20, 184, 166, 0.1)');
+            
+            const gradientAmber = ctxBar.createLinearGradient(0, 0, 0, 400);
+            gradientAmber.addColorStop(0, 'rgba(245, 158, 11, 0.8)');
+            gradientAmber.addColorStop(1, 'rgba(245, 158, 11, 0.1)');
+
+            if (convChart) convChart.destroy();
+            convChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Top of Funnel (Assessments)', 'Captured Leads'],
+                    datasets: [{
+                        label: 'Volume',
+                        data: [assessments, leads],
+                        backgroundColor: [gradientTeal, gradientAmber],
+                        borderColor: ['#14b8a6', '#f59e0b'],
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: 'rgba(51, 65, 85, 0.3)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+
+            // Doughnut Chart (Decisions)
+            const ctxDoughnut = document.getElementById('decisionChart').getContext('2d');
+            if (decChart) decChart.destroy();
+            
+            // Generate vibrant colors
+            const colors = ['#8b5cf6', '#14b8a6', '#f59e0b', '#f43f5e', '#3b82f6'];
+            
+            decChart = new Chart(ctxDoughnut, {
+                type: 'polarArea',
+                data: {
+                    labels: decLabels.length > 0 ? decLabels : ['No Data'],
+                    datasets: [{
+                        data: decData.length > 0 ? decData : [1],
+                        backgroundColor: colors.map(c => c + 'aa'), // add transparency
+                        borderColor: colors,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            ticks: { display: false },
+                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                            angleLines: { color: 'rgba(51, 65, 85, 0.3)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'right' }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 1500
+                    }
+                }
+            });
+        }
+
+        function generateDashboardInsights(assessments, totalLeads, decisionCounts) {
+            const aiEl = document.getElementById('ai-global-insights');
+            if (!assessments || assessments.length === 0) {
+                aiEl.innerHTML = "<em>Standby. Awaiting telemetry from field operators to generate risk profile.</em>";
+                return;
+            }
+
+            // Find top decision reason
+            let topReason = 'unknown';
+            let topVal = 0;
+            Object.entries(decisionCounts).forEach(([reason, count]) => {
+                if (count > topVal) {
+                    topVal = count;
+                    topReason = reason.replace('_', ' ');
+                }
+            });
+
+            // Conversion rate
+            let convRate = Math.round((totalLeads / assessments.length) * 100) || 0;
+
+            const highRiskCount = assessments.filter(a => a.overall_score >= 70).length;
+
+            let script = "<strong>Proactive Briefing:</strong> ";
+            
+            if (highRiskCount > 0) {
+                script += `<span style="color:var(--rose)">Critical Alert:</span> We've isolated ${highRiskCount} operator(s) in the 'Aggressive' flight-risk zone. `;
+            } else {
+                script += "Current pipeline telemetry shows a stabilized operator base. ";
+            }
+
+            if (topVal > 0) {
+                script += `The current leading platform utilization vector is <strong>${topReason.toUpperCase()}</strong>. `;
+                if (topReason.includes('career') || topReason.includes('promotion')) {
+                    script += "<em>Suggestion: Deploy immediate 1-on-1 career mapping sessions before outside recruiters poach this talent block.</em> ";
+                } else if (topReason.includes('entrepreneurship') || topReason.includes('business')) {
+                    script += "<em>Suggestion: This indicates high ambient ambition. Consider restructuring unvested equity or creating an intrapreneurship task-force to retain them.</em> ";
+                } else if (topReason.includes('personality')) {
+                    script += "<em>Suggestion: High frequency of behavioral profiling detected. Use Insights/DISC data to restructure team synergies and prevent communication breakdowns.</em> ";
+                } else if (topReason.includes('spiritual')) {
+                    script += "<em>Suggestion: Heavy calling-matrix utilization detected. Deploy targeted ministry placement interventions to align their APEST gifts with organizational needs.</em> ";
+                } else if (topReason.includes('cognitive')) {
+                    script += "<em>Suggestion: Elevated tactical logic testing detected. Identify top scorers for rapid promotion tracks in analytical roles.</em> ";
+                } else {
+                    script += "<em>Suggestion: Execute targeted counter-measures and anchor mapping via the Executive Simulator immediately.</em> ";
+                }
+            }
+
+            if (convRate > 0) {
+                script += `<br><br>With a ${convRate}% trap conversion rate, you have ${totalLeads} captured targets ready for immediate pipeline engagement.`;
+            }
+
+            aiEl.innerHTML = script;
+        }
+
+        // Boot
+        document.addEventListener('DOMContentLoaded', initDashboard);
+
+    </script>
+</body>
+</html>
